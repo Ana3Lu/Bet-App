@@ -1,5 +1,6 @@
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import React from "react";
 import {
     Image,
@@ -23,7 +24,7 @@ export default function HomeScreen() {
         translucent={true}
       />
 
-      {/* Círculo arriba izquierda */}
+      {/* Círculos decorativos */}
       <View style={[styles.decorShape, styles.decorShapeTopLeft]}>
         <LinearGradient
           colors={["#0d9c5c7b", "#293bad7b"]}
@@ -32,8 +33,6 @@ export default function HomeScreen() {
           style={{ flex: 1, borderRadius: 60 }}
         />
       </View>
-
-      {/* Círculo abajo derecha */}
       <View style={[styles.decorShape, styles.decorShapeBottomRight]}>
         <LinearGradient
           colors={["#0d9c5c7b", "#293bad7b"]}
@@ -87,7 +86,7 @@ export default function HomeScreen() {
           </View>
           <Text style={styles.remember}>Remember me</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => router.push("/reset")}>
           <Text style={styles.forgot}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
@@ -121,7 +120,7 @@ export default function HomeScreen() {
       {/* Sign Up */}
       <Text style={styles.bottomText}>
         Don’t have an account?{" "}
-        <Text style={styles.signUp} onPress={() => console.log("Go to Sign Up")}>
+        <Text style={styles.signUp} onPress={() => router.push("/register")}>
           Sign Up
         </Text>
       </Text>
@@ -146,16 +145,15 @@ const styles = StyleSheet.create({
   },
   decorShapeTopLeft: {
     top: 40,
-    left: -30,
+    left: -40,
   },
   decorShapeBottomRight: {
-    bottom: 130,
+    bottom: 120,
     right: -40,
   },
   logo: {
     width: 85,
     height: 85,
-    marginBottom: 10,
     resizeMode: "contain"
   },
   title: {
@@ -166,7 +164,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: "#ccc",
-    marginBottom: 30
+    marginBottom: 25
   },
   inputContainer: {
     flexDirection: "row",
@@ -238,7 +236,7 @@ const styles = StyleSheet.create({
   orText: {
     color: "#aaa",
     marginBottom: 15,
-    marginTop: 30
+    marginTop: 20
   },
   socialRow: {
     flexDirection: "row",
