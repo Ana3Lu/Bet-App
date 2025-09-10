@@ -3,16 +3,14 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
 import {
-    Image,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Image,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
-
-//Implementar esas pantallas y esos nav.. usando <Link> o router.navigate
 
 export default function HomeScreen() {
   return (
@@ -92,7 +90,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Sign In Button */}
-      <TouchableOpacity style={styles.buttonWrapper}>
+      <TouchableOpacity style={styles.buttonWrapper} onPress={() => router.replace("/main/(tabs)")}>
         <LinearGradient
           colors={["#4facfe", "#43e97b"]}
           start={{ x: 0, y: 0 }}
@@ -144,11 +142,11 @@ const styles = StyleSheet.create({
     borderRadius: 60
   },
   decorShapeTopLeft: {
-    top: 40,
+    top: 60,
     left: -40,
   },
   decorShapeBottomRight: {
-    bottom: 120,
+    bottom: 140,
     right: -40,
   },
   logo: {

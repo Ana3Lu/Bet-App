@@ -3,13 +3,13 @@ import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React from "react";
 import {
-    Image,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Image,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 export default function ResetScreen() {
@@ -67,11 +67,11 @@ const styles = StyleSheet.create({
     borderRadius: 60
   },
   decorShapeBottomLeft: {
-    bottom: 130,
+    bottom: 170,
     left: -40,
   },
   decorShapeTopRight: {
-    top: 40,
+    top: 60,
     right: -40,
   },
   logo: {
