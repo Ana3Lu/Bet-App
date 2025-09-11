@@ -13,6 +13,9 @@ import {
 } from "react-native";
 
 export default function ResetScreen() {
+
+  const [email, setEmail] = useState("");
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1b266bff" translucent />

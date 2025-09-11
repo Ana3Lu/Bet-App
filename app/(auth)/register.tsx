@@ -1,7 +1,8 @@
+import { AuthContext } from "@/contexts/AuthContext";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React from "react";
+import { useContext, useState } from "react";
 import {
   Image,
   StatusBar,
@@ -13,6 +14,13 @@ import {
 } from "react-native";
 
 export default function RegisterScreen() {
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  
+  const context = useContext(AuthContext);
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1b266bff" translucent />
@@ -57,7 +65,7 @@ export default function RegisterScreen() {
       </View>
 
       {/* Botón */}
-      <TouchableOpacity style={styles.buttonWrapper} onPress={() => router.push("/login")}>
+      <TouchableOpacity style={styles.buttonWrapper} onPress={() => {context.register(name, email, password)}}>
         <LinearGradient colors={["#4facfe", "#43e97b"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.button}>
           <Text style={styles.buttonText}>Register</Text>
         </LinearGradient>

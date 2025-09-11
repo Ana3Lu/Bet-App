@@ -1,7 +1,8 @@
+import { AuthContext } from "@/contexts/AuthContext";
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React from "react";
+import { useContext, useState } from "react";
 import {
   Image,
   StatusBar,
@@ -12,7 +13,32 @@ import {
   View
 } from "react-native";
 
-export default function HomeScreen() {
+export default function Login() {
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const context = useContext(AuthContext);
+
+  const handleLogin = async () => {
+    console.log("Login:", { email, password });
+
+    await context.login(email, password);
+    if (context.user) {
+      router.replace("/main/home");
+    }
+  };
+
+  const handleRegister = () => {
+    console.log("Registro");
+    router.push("/register");
+  }
+
+  const handleForgotPassword = () => {
+    console.log("Olvidé mi contraseña");
+    router.push("/reset");
+  }
+
   return (
     <View style={styles.container}>
 
@@ -57,6 +83,10 @@ export default function HomeScreen() {
           placeholder="Email"
           placeholderTextColor="#aaa"
           style={styles.input}
+          onChangeText={setEmail}
+          value={email}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
       </View>
 
@@ -71,8 +101,10 @@ export default function HomeScreen() {
         <TextInput
           placeholder="Password"
           placeholderTextColor="#aaa"
-          secureTextEntry
           style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={true}
         />
       </View>
 
@@ -90,7 +122,7 @@ export default function HomeScreen() {
       </View>
 
       {/* Sign In Button */}
-      <TouchableOpacity style={styles.buttonWrapper} onPress={() => router.replace("/main/(tabs)")}>
+      <TouchableOpacity style={styles.buttonWrapper} onPress={handleLogin}>
         <LinearGradient
           colors={["#4facfe", "#43e97b"]}
           start={{ x: 0, y: 0 }}

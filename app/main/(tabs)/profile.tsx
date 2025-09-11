@@ -1,9 +1,14 @@
+import { AuthContext } from "@/contexts/AuthContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
+import { useContext } from "react";
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function ProfileScreen() {
+
   const router = useRouter();
+
+  const context = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
@@ -34,7 +39,10 @@ export default function ProfileScreen() {
       </TouchableOpacity>
       <TouchableOpacity 
         style={[styles.button, { backgroundColor: "#5c43e9ff" }]} 
-        onPress={() => router.replace("/(auth)/login")}
+        onPress={() => {
+          context.logout();
+          router.replace("/login");
+        }}
       >
         <Text style={styles.buttonText}>🚪 Log Out</Text>
       </TouchableOpacity>
