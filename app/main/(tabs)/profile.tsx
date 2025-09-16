@@ -29,9 +29,9 @@ export default function ProfileScreen() {
 
       {/* User info */}
       <Text style={styles.sectionTitle}>👤 User Information</Text>
-      <Text style={styles.userLabel}>Name: <Text style={styles.userValue}>Ana Quintero</Text></Text>
-      <Text style={styles.userLabel}>Email: <Text style={styles.userValue}>ana@example.com</Text></Text>
-      <Text style={styles.userLabel}>Joined: <Text style={styles.userValue}>September 2025</Text></Text>
+      <Text style={styles.userLabel}>Name: <Text style={styles.userValue}>{context.user?.name}</Text></Text>
+      <Text style={styles.userLabel}>Email: <Text style={styles.userValue}>{context.user?.email}</Text></Text>
+      <Text style={styles.userLabel}>Joined: <Text style={styles.userValue}>{context.user?.joined}</Text></Text>
 
       {/* Actions */}
       <TouchableOpacity style={[styles.button, { backgroundColor: "#4facfe" }]}>

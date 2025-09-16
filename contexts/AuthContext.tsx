@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
+import { supabase } from "../utils/supabase";
 
 // Traer hijos de esa etiqueta, exponiendo todo lo que tenga adentro
 interface AuthContextProps {
@@ -9,54 +10,44 @@ interface AuthContextProps {
     logout: () => Promise<void>,
 }
 
-const fakeDataSource = [
-    {
-        email: "test@test.com",
-        password: "12345678",
-        name: "TEST"
-    },
-    {
-        email: "test1@test.com",
-        password: "12345678",
-        name: "TEST"
-    },
-    {
-        email: "test2@test.com",
-        password: "12345678",
-        name: "TEST"
-    }
-]
-
 export const AuthContext = createContext({} as AuthContextProps);
-
-interface User {
-        email: string;
-        password: string;
-        name: string;
-    }
 
 export const AuthProvider = ({ children }: any) => {
     
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<any>(null);
     const [isLoading,setIsLoading] = useState(false);
 
+    // Mantener sesión en memoria al recargar la 
+    useEffect(() => {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) setUser(session.user);
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
     const login = async (email: string, password: string) => {
-        // si pasa correo y contraseña, decir si exite o no, y en login con handle login al pusal sesion.. pasar email
         if (!email || !password) {
             alert("Email and password are required");
             return;
         } 
         setIsLoading(true);
 
-        setTimeout(() => {
-            const foundUser = fakeDataSource.find(user => user.email === email && user.password === password);
-            if (foundUser) {
-                setUser(foundUser);
-            } else {
-                alert("Invalid email or password");
-            }
-            setIsLoading(false);
-        }, 2000);
+        const response = await supabase.auth.signInWithPassword({ email, password });
+
+        if (response.error) {
+            alert(response.error.message);
+        } else {
+            setUser(response.data.user);
+        }
     }
 
     const register = async (name: string, email: string, password: string) => {
@@ -65,17 +56,17 @@ export const AuthProvider = ({ children }: any) => {
             return;
         }
 
-        const exists = fakeDataSource.find(u => u.email === email);
-        
-        if (exists) {
-            alert("Email already exists");
-            return;
+        const response = await supabase.auth.signUp({
+            email,
+            password,
+            options: { data: { name } }
+        });
+
+        if (response.error) {
+            alert(response.error.message);
+        } else {
+            setUser(response.data.user);
         }
-
-        const newUser = { email, password, name };
-
-        fakeDataSource.push(newUser);
-        setUser(newUser);
     };
 
     const logout = async () => {
