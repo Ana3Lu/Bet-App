@@ -30,7 +30,6 @@ export const AuthProvider = ({ children }: any) => {
   // Keep session active
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log("✅ Active session on app start:", session);
       if (session?.user) {
         const { data } = await supabase
           .from("profiles")
@@ -69,8 +68,6 @@ export const AuthProvider = ({ children }: any) => {
         email,
         password,
       });
-
-      console.log("👉 Login result:", { data, error });
 
       if (error || !data.user) {
         console.log("❌ Login error:", error?.message);
@@ -117,10 +114,10 @@ export const AuthProvider = ({ children }: any) => {
       return false;
     }
 
-const { error: profileError } = await supabase
+    const { error: profileError } = await supabase
       .from("profiles")
       .insert({
-        id: data.user.id,   // mismo UUID que en auth.users
+        id: data.user.id,
         name: name.trim(),
         email: email.trim(),
         points: 0,
@@ -128,8 +125,8 @@ const { error: profileError } = await supabase
       });
 
     if (profileError) {
-      console.log("❌ Error insertando en profiles:", profileError.message);
-      alert("Error al registrar el perfil: " + profileError.message);
+      console.log("❌ Error inserting profile:", profileError.message);
+      alert("Error creating profile: " + profileError.message);
       return false;
     }
 
@@ -140,8 +137,8 @@ const { error: profileError } = await supabase
     return false;
   } finally {
     setIsLoading(false);
-  }
-};
+    }
+  };
 
   // Update profile
   const updateProfile = async (profileData: Partial<Profile>) => {

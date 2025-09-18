@@ -22,16 +22,16 @@ export default function RegisterScreen() {
   const context = useContext(AuthContext);
 
   const handleRegister = async () => {
-  console.log(">>> REGISTRO:", { name, email, password });
-    const ok = await context.register(name.trim(), email.trim(), password.trim());
+    console.log(">>> REGISTRO:", { name, email, password });
+      const ok = await context.register(name.trim(), email.trim(), password.trim());
 
-  if (ok) {
-    console.log("✅ Registration successful, go to login");
-    router.replace("/login");
-  } else {
-    console.log("❌ Registration failed");
-  }
-};
+    if (ok) {
+      console.log("✅ Registration successful, go to login");
+      router.replace("/login");
+    } else {
+      console.log("❌ Registration failed");
+    }
+  };
 
 
   return (
@@ -101,9 +101,20 @@ export default function RegisterScreen() {
       </View>
 
       {/* Botón */}
-      <TouchableOpacity style={styles.buttonWrapper} onPress={handleRegister}>
-        <LinearGradient colors={["#4facfe", "#43e97b"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.button}>
-          <Text style={styles.buttonText}>Register</Text>
+      <TouchableOpacity
+        style={styles.buttonWrapper}
+        onPress={handleRegister}
+        disabled={context.isLoading}
+      >
+        <LinearGradient
+          colors={["#4facfe", "#43e97b"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.button, context.isLoading && { opacity: 0.6 }]}
+        >
+          <Text style={styles.buttonText}>
+            {context.isLoading ? "Registering..." : "Register"}
+          </Text>
         </LinearGradient>
       </TouchableOpacity>
 

@@ -24,6 +24,7 @@ export default function Login() {
     console.log("Login:", { email, password });
 
     const ok = await context.login(email, password);
+    
     if (ok) {
       console.log("Login exitoso, navegando...");
       router.replace("/main/(tabs)/home");

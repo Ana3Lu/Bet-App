@@ -15,7 +15,7 @@ import {
 
 export default function ResetScreen() {
 
-  const [email] = useState("");
+  const [email, setEmail] = useState("");
 
   const handleReset = async () => {
     const { error } = await supabase.auth.resetPasswordForEmail(email);
@@ -50,17 +50,28 @@ export default function ResetScreen() {
       {/* Input Email */}
       <View style={styles.inputContainer}>
         <Ionicons name="mail" size={20} color="#4facfe" style={styles.iconLeft} />
-        <TextInput placeholder="Email" placeholderTextColor="#aaa" style={styles.input} />
+        <TextInput
+        placeholder="Email"
+        placeholderTextColor="#aaa"
+        style={styles.input}
+        value={email}
+        onChangeText={setEmail}
+        />
       </View>
 
       {/* Botón */}
-      <TouchableOpacity style={styles.buttonWrapper} onPress={() => router.push("/login")}>
-        <LinearGradient colors={["#4facfe", "#43e97b"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.button}>
+      <TouchableOpacity style={styles.buttonWrapper} onPress={handleReset}>
+        <LinearGradient
+          colors={["#4facfe", "#43e97b"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.button}
+        >
           <Text style={styles.buttonText}>Send Reset Link</Text>
         </LinearGradient>
       </TouchableOpacity>
 
-      <Text style={styles.bottomText} onPress={handleReset}>
+      <Text style={styles.bottomText} onPress={() => router.push("/login")}>
         Back to <Text style={styles.signUp}>Sign In</Text>
       </Text>
     </View>
