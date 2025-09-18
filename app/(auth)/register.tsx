@@ -21,6 +21,15 @@ export default function RegisterScreen() {
   
   const context = useContext(AuthContext);
 
+  const handleRegister = async () => {
+    console.log(">>> REGISTRO:", { name, email, password });
+    const ok = await context.register(name.trim(), email.trim(), password.trim());
+
+    if (ok) {
+      router.push("/login"); // registro exitoso → al login
+    }
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1b266bff" translucent />
@@ -53,19 +62,42 @@ export default function RegisterScreen() {
       {/* Inputs */}
       <View style={styles.inputContainer}>
         <Ionicons name="person" size={20} color="#4facfe" style={styles.iconLeft} />
-        <TextInput placeholder="Name" placeholderTextColor="#aaa" style={styles.input} />
+        <TextInput
+          placeholder="Name"
+          placeholderTextColor="#aaa"
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+        />
       </View>
+
       <View style={styles.inputContainer}>
         <Ionicons name="mail" size={20} color="#4facfe" style={styles.iconLeft} />
-        <TextInput placeholder="Email" placeholderTextColor="#aaa" style={styles.input} />
+        <TextInput
+          placeholder="Email"
+          placeholderTextColor="#aaa"
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          autoCapitalize="none"
+          keyboardType="email-address"
+        />
       </View>
+
       <View style={styles.inputContainer}>
         <MaterialCommunityIcons name="lock-outline" size={20} color="#4facfe" style={styles.iconLeft} />
-        <TextInput placeholder="Password" placeholderTextColor="#aaa" secureTextEntry style={styles.input} />
+        <TextInput
+          placeholder="Password"
+          placeholderTextColor="#aaa"
+          secureTextEntry
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+        />
       </View>
 
       {/* Botón */}
-      <TouchableOpacity style={styles.buttonWrapper} onPress={() => {context.register(name, email, password)}}>
+      <TouchableOpacity style={styles.buttonWrapper} onPress={handleRegister}>
         <LinearGradient colors={["#4facfe", "#43e97b"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.button}>
           <Text style={styles.buttonText}>Register</Text>
         </LinearGradient>

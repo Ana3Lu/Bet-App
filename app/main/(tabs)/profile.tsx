@@ -29,13 +29,29 @@ export default function ProfileScreen() {
 
       {/* User info */}
       <Text style={styles.sectionTitle}>👤 User Information</Text>
-      <Text style={styles.userLabel}>Name: <Text style={styles.userValue}>{context.user?.name}</Text></Text>
-      <Text style={styles.userLabel}>Email: <Text style={styles.userValue}>{context.user?.email}</Text></Text>
-      <Text style={styles.userLabel}>Joined: <Text style={styles.userValue}>{context.user?.joined}</Text></Text>
+      
+      <Text style={styles.userLabel}>
+        Username: <Text style={styles.userValue}>{context.user?.name}</Text>
+      </Text>
+      <Text style={styles.userLabel}>
+        Email: <Text style={styles.userValue}>{context.user?.email}</Text>
+      </Text>
+      <Text style={styles.userLabel}>
+        Bio: <Text style={styles.userValue}>{context.user?.bio ?? "—"}</Text>
+      </Text>
+      <Text style={styles.userLabel}>
+        Phone: <Text style={styles.userValue}>{context.user?.phone ?? "—"}</Text>
+      </Text>
+      <Text style={styles.userLabel}>
+        Gender: <Text style={styles.userValue}>{context.user?.gender ?? "—"}</Text>
+      </Text>
+      <Text style={styles.userLabel}>
+        Points: <Text style={styles.userValue}>{context.user?.points ?? 0}</Text>
+      </Text>
 
       {/* Actions */}
       <TouchableOpacity style={[styles.button, { backgroundColor: "#4facfe" }]}>
-        <Text style={styles.buttonText}>✏️ Edit Profile</Text>
+        <Text style={styles.buttonText} onPress={() => router.push("/main/editProfileScreen")}>✏️ Edit Profile</Text>
       </TouchableOpacity>
       <TouchableOpacity 
         style={[styles.button, { backgroundColor: "#5c43e9ff" }]} 

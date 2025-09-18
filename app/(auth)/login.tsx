@@ -23,21 +23,14 @@ export default function Login() {
   const handleLogin = async () => {
     console.log("Login:", { email, password });
 
-    await context.login(email, password);
-    if (context.user) {
-      router.replace("/main/home");
+    const ok = await context.login(email, password);
+    if (ok) {
+      console.log("Login exitoso, navegando...");
+      router.replace("/main/(tabs)/home");
+    } else {
+      console.log("Login fallido");
     }
   };
-
-  const handleRegister = () => {
-    console.log("Registro");
-    router.push("/register");
-  }
-
-  const handleForgotPassword = () => {
-    console.log("Olvidé mi contraseña");
-    router.push("/reset");
-  }
 
   return (
     <View style={styles.container}>
@@ -122,14 +115,20 @@ export default function Login() {
       </View>
 
       {/* Sign In Button */}
-      <TouchableOpacity style={styles.buttonWrapper} onPress={handleLogin}>
+      <TouchableOpacity 
+        style={styles.buttonWrapper} 
+        onPress={handleLogin}
+        disabled={context.isLoading}
+      >
         <LinearGradient
           colors={["#4facfe", "#43e97b"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.button}
+          style={[styles.button, context.isLoading && { opacity: 0.6 }]}
         >
-          <Text style={styles.buttonText}>Sign In</Text>
+          <Text style={styles.buttonText}>
+            {context.isLoading ? "Loading..." : "Sign In"}
+          </Text>
         </LinearGradient>
       </TouchableOpacity>
 

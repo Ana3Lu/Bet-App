@@ -1,7 +1,8 @@
+import { supabase } from "@/utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React from "react";
+import { useState } from "react";
 import {
   Image,
   StatusBar,
@@ -14,7 +15,18 @@ import {
 
 export default function ResetScreen() {
 
-  const [email, setEmail] = useState("");
+  const [email] = useState("");
+
+  const handleReset = async () => {
+    const { error } = await supabase.auth.resetPasswordForEmail(email);
+    if (error) {
+      console.log("Error sending reset email:", error.message);
+      alert("Error sending reset email: " + error.message);
+    } else {
+      alert("If an account with that email exists, a reset link has been sent.");
+      router.push("/login");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -48,7 +60,7 @@ export default function ResetScreen() {
         </LinearGradient>
       </TouchableOpacity>
 
-      <Text style={styles.bottomText} onPress={() => router.push("/login")}>
+      <Text style={styles.bottomText} onPress={handleReset}>
         Back to <Text style={styles.signUp}>Sign In</Text>
       </Text>
     </View>
