@@ -19,6 +19,7 @@ interface AuthContextProps {
   updateProfile: (profileData: Partial<Profile>) => Promise<boolean>;
   setUser: (user: Profile | null) => void;
   logout: () => Promise<void>;
+  resetPasswordSimulated: (email: string) => Promise<boolean>;
 }
 
 export const AuthContext = createContext({} as AuthContextProps);
@@ -178,6 +179,26 @@ export const AuthProvider = ({ children }: any) => {
     setUser(null);
   };
 
+  // Reset password 
+  const resetPasswordSimulated = async (email: string) => {
+    setIsLoading(true);
+    try {
+        // Simulate password reset
+        console.log(`Simulating password reset for: ${email}`);
+        alert(
+        `If exists an account with ${email}, we will send you an email with instructions to reset your password...`
+        );
+        return true;
+    } catch (err) {
+        console.log("Unexpected reset error:", err);
+        alert("Unexpected error while simulating reset.");
+        return false;
+    } finally {
+        setIsLoading(false);
+    }
+    };
+
+
   return (
     <AuthContext.Provider
       value={{
@@ -188,6 +209,7 @@ export const AuthProvider = ({ children }: any) => {
         updateProfile,
         setUser,
         logout,
+        resetPasswordSimulated,
       }}
     >
       {children}

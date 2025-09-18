@@ -1,8 +1,8 @@
-import { supabase } from "@/utils/supabase";
+import { AuthContext } from "@/contexts/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Image,
   StatusBar,
@@ -16,14 +16,11 @@ import {
 export default function ResetScreen() {
 
   const [email, setEmail] = useState("");
+  const context = useContext(AuthContext);
 
   const handleReset = async () => {
-    const { error } = await supabase.auth.resetPasswordForEmail(email);
-    if (error) {
-      console.log("Error sending reset email:", error.message);
-      alert("Error sending reset email: " + error.message);
-    } else {
-      alert("If an account with that email exists, a reset link has been sent.");
+    const ok = await context.resetPasswordSimulated(email);
+    if (ok) {
       router.push("/login");
     }
   };
