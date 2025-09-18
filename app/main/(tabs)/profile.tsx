@@ -1,4 +1,5 @@
 import { AuthContext } from "@/contexts/AuthContext";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useContext } from "react";
@@ -28,7 +29,7 @@ export default function ProfileScreen() {
       </View>
 
       {/* User info */}
-      <Text style={styles.sectionTitle}>👤 User Information</Text>
+      <Text style={styles.sectionTitle}><Ionicons name="person-circle-outline" size={24} color="white" /> User Information</Text>
       
       <Text style={styles.userLabel}>
         Username: <Text style={styles.userValue}>{context.user?.name}</Text>
@@ -54,7 +55,7 @@ export default function ProfileScreen() {
         <Text style={styles.buttonText} onPress={() => router.push("/main/editProfileScreen")}>✏️ Edit Profile</Text>
       </TouchableOpacity>
       <TouchableOpacity 
-        style={[styles.button, { backgroundColor: "#5c43e9ff" }]} 
+        style={[styles.button, { backgroundColor: "#b243e9ff" }]} 
         onPress={() => {
           context.logout();
           router.replace("/login");
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     },
   decorShape: { 
     position: "absolute", 
-    width: 170, 
+    width: 150, 
     height: 40, 
     borderRadius: 60 
   },
@@ -83,7 +84,7 @@ const styles = StyleSheet.create({
     left: -40 
   },
   decorShapeBottomRight: { 
-    bottom: 30, 
+    bottom: 25, 
     right: -40 
   },
   circleGradient: { 
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
   },
   avatarContainer: { 
     alignItems: "center", 
-    marginTop: 120, 
+    marginTop: 90, 
     marginBottom: 20, 
     borderRadius: 60, 
     padding: 5, 
@@ -108,21 +109,22 @@ const styles = StyleSheet.create({
     fontSize: 25, 
     fontWeight: "bold", 
     color: "#fff", 
-    marginBottom: 15 
+    marginBottom: 15,
+    textAlign: "center" 
   },
   userLabel: { 
     fontSize: 16, 
     fontWeight: "bold", 
     color: "#ccc", 
-    marginBottom: 10,
-    marginLeft: 20
+    marginBottom: 5,
+    marginLeft: 10
   },
   userValue: { 
     fontWeight: "normal", 
     color: "#fff" 
   },
   button: { 
-    marginTop: 20, 
+    marginTop: 15, 
     paddingVertical: 12, 
     borderRadius: 25, 
     alignItems: "center" 

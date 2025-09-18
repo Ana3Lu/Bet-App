@@ -37,20 +37,20 @@ export default function HomeScreen() {
 
       {/* Contenido */}
       <Text style={styles.title}>🏠 Home</Text>
-      <Text style={styles.subtitle}><Text style={{ fontWeight: "bold" }}>Bety!</Text> Your favorite hub for recreational betting.</Text>
+      <Text style={styles.subtitle}><Text style={{ fontWeight: "bold" }}>Bety!</Text> The best hub for recreational betting.</Text>
       <Text style={styles.paragraph}>
         Track your activity, explore features, and stay updated with the latest news inside the app.
       </Text>
 
       {/* Accesos rápidos */}
       <TouchableOpacity style={[styles.button, { backgroundColor: "#4facfe" }]}>
-        <Text style={styles.buttonText}>⚡ Quick Bet</Text>
+        <Text style={styles.buttonText}>⚡ Quick Bet ⚡</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.button, { backgroundColor: "#0d9c5c" }]}>
-        <Text style={styles.buttonText}>📊 My Statistics</Text>
+      <TouchableOpacity style={[styles.button, { backgroundColor: "#0d9a9cff" }]}>
+        <Text style={styles.buttonText}>📊 My Statistics 📊</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.button, { backgroundColor: "#5c43e9ff" }]}>
-        <Text style={styles.buttonText}>🏆 Leaderboard</Text>
+      <TouchableOpacity style={[styles.button, { backgroundColor: "#b243e9ff" }]}>
+        <Text style={styles.buttonText}>🏆 Leaderboard 🏆</Text>
       </TouchableOpacity>
     </View>
   );
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     borderRadius: 60
   },
   decorShapeTopLeft: {
-    top: 130,
+    top: 80,
     left: -40,
   },
   decorShapeBottomRight: {
@@ -88,11 +88,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     color: "#fff",
-    marginBottom: 5
+    marginBottom: 25
   },
   subtitle: {
     fontSize: 16,
     color: "#ccc",
+    textAlign: "center",
     marginBottom: 15
   },
   paragraph: {

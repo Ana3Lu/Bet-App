@@ -78,14 +78,14 @@ decorShapeTopRight: {
     height: 85, 
     resizeMode: "contain", 
     marginBottom: 5,
-    marginTop: 40, 
+    marginTop: 30, 
     alignSelf: "center"
   },
   title: { 
     fontSize: 30, 
     fontWeight: "bold", 
     color: "#fff", 
-    marginBottom: 5 
+    marginBottom: 15 
   },
   subtitle: { 
     fontSize: 16, 

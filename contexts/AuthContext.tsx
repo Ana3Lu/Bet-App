@@ -27,10 +27,10 @@ export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Mantener sesión activa
+  // Keep session active
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-    console.log("✅ Sesión activa al iniciar la app:", session);
+      console.log("✅ Active session on app start:", session);
       if (session?.user) {
         const { data } = await supabase
           .from("profiles")
@@ -63,72 +63,46 @@ export const AuthProvider = ({ children }: any) => {
 
   // Login
   const login = async (email: string, password: string) => {
-  setIsLoading(true);
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    console.log("✅ Sesión Supabase:", data.session);
-    console.log("👉 Resultado login:", { data, error });
+      console.log("👉 Login result:", { data, error });
 
+      if (error || !data.user) {
+        console.log("❌ Login error:", error?.message);
+        alert("Login failed: " + (error?.message || "Invalid credentials"));
+        return false;
+      }
 
-    if (error || !data.user) {
-      console.log("Error en login:", error?.message);
-      alert("Error al iniciar sesión: " + error?.message);
+      // Load profile
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", data.user.id)
+        .single();
+
+      if (profileError || !profile) {
+        console.log("❌ Profile not found for this user");
+        alert("Profile not found. Please contact support.");
+        return false;
+      }
+
+      setUser(profile);
+      return true;
+    } catch (err) {
+      console.log("Unexpected login error:", err);
+      alert("Unexpected error while logging in.");
       return false;
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select()
-      .eq("id", data.user.id)
-      .single();
-
-    if (profileError) {
-        console.log("⚠️ No existe perfil en profiles, creando uno nuevo...");
-
-  const { data: newProfile, error: insertError } = await supabase
-    .from("profiles")
-    .insert({
-      id: data.user.id,
-      name: data.user.user_metadata.full_name,
-      email: data.user.email,
-      points: 0,
-      bio: "hello!",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .select()
-    .single();
-
-  if (insertError) {
-    console.log("Error al crear perfil automáticamente:", insertError.message);
-    setIsLoading(false);
-    return false;
-  }
-
-  setUser(newProfile);
-  setIsLoading(false);
-  return true;
-}
-
-
-
-    if (profile) setUser(profile);
-    return true;
-  } catch (error) {
-    console.log("Error inesperado en login:", error);
-    alert("Error inesperado al iniciar sesión");
-    return false;
-  } finally {
-    setIsLoading(false); // 🔥 siempre libera loading
-  }
-};
-
-
-  // Registro
+  // Register (create user + profile)
   const register = async (name: string, email: string, password: string) => {
   setIsLoading(true);
   try {
@@ -138,12 +112,12 @@ export const AuthProvider = ({ children }: any) => {
     });
 
     if (error || !data.user) {
-      console.log("❌ Error en auth.signUp:", error?.message);
-      alert("Error al registrar el usuario: " + error?.message);
+      console.log("❌ Auth signUp error:", error?.message);
+      alert("Registration failed: " + error?.message);
       return false;
     }
 
-    const { error: profileError } = await supabase
+const { error: profileError } = await supabase
       .from("profiles")
       .insert({
         id: data.user.id,   // mismo UUID que en auth.users
@@ -161,43 +135,43 @@ export const AuthProvider = ({ children }: any) => {
 
     return true;
   } catch (err) {
-    console.log("Error inesperado en registro:", err);
-    alert("Error inesperado al registrar el usuario");
+    console.log("Unexpected registration error:", err);
+    alert("Unexpected error during registration.");
     return false;
   } finally {
     setIsLoading(false);
   }
 };
 
-
-  // Actualizar perfil
-  const updateProfile = async(profileData: Partial<Profile>) => {
+  // Update profile
+  const updateProfile = async (profileData: Partial<Profile>) => {
     if (!user) return false;
 
     setIsLoading(true);
     try {
-        const {data, error} = await supabase
-            .from("profiles")
-            .update(profileData)
-            .eq("id", user.id)
-            .select()
-            .single();
+      const { data, error } = await supabase
+        .from("profiles")
+        .update(profileData)
+        .eq("id", user.id)
+        .select()
+        .single();
 
-            if (error || !data) {
-                console.log("Error en actualización de perfil:", error?.message);
-                alert("Error al actualizar el perfil: " + error?.message);
-                setIsLoading(false);
-                return false;
-            }
-
-            setUser(data);
-            setIsLoading(false);
-            return true;
-    } catch (error) {
-        console.log("Error inesperado en actualización de perfil:", error);
-        alert("Error inesperado al actualizar el perfil");
+      if (error || !data) {
+        console.log("❌ Update profile error:", error?.message);
+        alert("Failed to update profile: " + error?.message);
         setIsLoading(false);
         return false;
+      }
+
+      setUser(data);
+      setIsLoading(false);
+      return true;
+    } catch (err) {
+      console.log("Unexpected error updating profile:", err);
+      alert("Unexpected error while updating profile.");
+      return false;
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -206,7 +180,7 @@ export const AuthProvider = ({ children }: any) => {
     await supabase.auth.signOut();
     setUser(null);
   };
-  
+
   return (
     <AuthContext.Provider
       value={{

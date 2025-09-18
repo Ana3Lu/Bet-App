@@ -22,13 +22,17 @@ export default function RegisterScreen() {
   const context = useContext(AuthContext);
 
   const handleRegister = async () => {
-    console.log(">>> REGISTRO:", { name, email, password });
+  console.log(">>> REGISTRO:", { name, email, password });
     const ok = await context.register(name.trim(), email.trim(), password.trim());
 
-    if (ok) {
-      router.push("/login"); // registro exitoso → al login
-    }
-  };
+  if (ok) {
+    console.log("✅ Registration successful, go to login");
+    router.replace("/login");
+  } else {
+    console.log("❌ Registration failed");
+  }
+};
+
 
   return (
     <View style={styles.container}>

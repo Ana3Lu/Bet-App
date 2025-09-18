@@ -1,4 +1,4 @@
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -15,7 +15,7 @@ export default function SettingsScreen() {
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
       </View>
 
-      <Text style={styles.title}>⚙️ Settings</Text>
+      <Text style={styles.title}><Ionicons name="settings-outline" size={30} color="white" /> Settings</Text>
       <Text style={styles.subtitle}>Configure your preferences</Text>
 
       {/* Items */}
@@ -25,7 +25,7 @@ export default function SettingsScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.item}>
-        <FontAwesome name="bell" size={18} color="#0d9c5c" />
+        <FontAwesome name="bell" size={18} color="#aeca23ff" />
         <Text style={styles.itemText}>Notifications</Text>
       </TouchableOpacity>
 

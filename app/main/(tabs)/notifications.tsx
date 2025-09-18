@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
 
@@ -24,7 +25,7 @@ export default function NotificationsScreen() {
       <Image source={require("../../../assets/images/Bety.png")} style={styles.logo} />
         
       {/* Contenido */}
-      <Text style={styles.title}>🔔 Notifications</Text>
+      <Text style={styles.title}><Ionicons name="notifications-outline" size={30} color="white" /> Notifications</Text>
       <Text style={styles.subtitle}>Stay up to date with your bets</Text>
 
       {notifications.map((notif) => (
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold", 
     color: "#fff", 
     marginTop: 10, 
-    marginBottom: 5
+    marginBottom: 15,
   },
   subtitle: { 
     fontSize: 14, 

@@ -1,15 +1,16 @@
 import { AuthContext } from "@/contexts/AuthContext";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import {
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 
 export default function EditProfileScreen() {
@@ -29,7 +30,7 @@ export default function EditProfileScreen() {
       phone,
       gender,
     });
-    router.back(); // volver a ProfileScreen
+    router.push("/main/(tabs)/profile"); // volver a ProfileScreen
   };
 
   return (
@@ -45,7 +46,7 @@ export default function EditProfileScreen() {
       </View>
 
       <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
-        <Text style={styles.sectionTitle}>✏️ Edit Profile</Text>
+        <Text style={styles.sectionTitle}><Ionicons name="pencil" size={24} color="white" /><Ionicons name="person-circle-outline" size={24} color="white" /> Edit Profile</Text>
 
         {/* Username */}
         <TextInput
@@ -85,13 +86,13 @@ export default function EditProfileScreen() {
         />
 
         {/* Save Button */}
-        <TouchableOpacity style={[styles.button, { backgroundColor: "#43e97b" }]} onPress={handleSave}>
+        <TouchableOpacity style={[styles.button, { backgroundColor: "#0d9a9cff" }]} onPress={handleSave}>
           <Text style={styles.buttonText}>💾 Save</Text>
         </TouchableOpacity>
 
         {/* Cancel Button */}
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#e94e4e" }]}
+          style={[styles.button, { backgroundColor: "#dc5990ff" }]}
           onPress={() => router.back()}
         >
           <Text style={styles.buttonText}>❌ Cancel</Text>
@@ -131,6 +132,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold", 
     color: "#fff", 
     marginBottom: 20,
+    marginTop: 20,
     textAlign: "center"
   },
   input: {
