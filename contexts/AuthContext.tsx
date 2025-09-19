@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import { createContext, useEffect, useState } from "react";
 import { supabase } from "../utils/supabase";
 
@@ -32,7 +31,7 @@ export const AuthProvider = ({ children }: any) => {
   // Keep session active
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      console.log("✅ Active session on app start:", session);
+      //console.log("Session:", session);
       if (session?.user) {
         const { data } = await supabase
           .from("profiles")
@@ -66,6 +65,7 @@ export const AuthProvider = ({ children }: any) => {
   // Login
   const login = async (email: string, password: string) => {
     try {
+      setIsLoading(true);
       setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -116,73 +116,47 @@ export const AuthProvider = ({ children }: any) => {
     }
   }
 
-  // Register 
-  const register = async (user: any, password: string) => {
-    try {
-      setIsLoading(true);
-      console.log(">>> REGISTER:", { user, password });
-      const { data, error } = await supabase.auth.signUp({
-        email: user.email,
-        password,
-        options: { data: { name: user.name } }
-      });
-      console.log("👉 Register result:", { data, error });
+  // Register (create user + profile)
+  const register = async (name: string, email: string, password: string) => {
+  try {
+    setIsLoading(true);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-      if (error) {
-        console.log("❌ Auth signUp error:", error.message);
-        alert("Registration failed: " + (error.message || "Unknown error"));
-        throw new Error(error.message);
-      }
+    console.log(">>> Auth signUp:", { data, error });
 
-      console.log("✅ Auth signUp success, creating profile...");
-      if (data.user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert({
-            id: data.user.id,
-            name: user.name || user.email.split('@')[0],
-            email: user.email,
-            phone: "",
-            gender: "",
-            points: 0,
-            bio: "hello!"
-          });
-
-        console.log("👉 Profile insert result:", { profileError });
-
-        if (profileError) {
-          console.error("❌ Error inserting profile:", profileError.message);
-          throw new Error("Error inserting profile: " + profileError.message);
-        }
-
-        setUser({
-          id: data.user.id,
-          email: data.user.email,
-          name: user.name || user.email.split('@')[0],
-          phone: "",
-          gender: "",
-          points: 0,
-          bio: "hello!"
-        });
-
-        setIsLoading(false);
-
-        console.log("✅ Profile created, logging in...");
-        alert("Registration successful!");
-
-        const loginResult = await login(user.email, password);
-        if (loginResult) {
-          router.replace("/main/(tabs)/home");
-        }
-        return true;
-      } else {
-        console.error("❌ No user data returned after signUp.");
-        return false;
-      }     
-      
-    } catch (err) {
-      console.error("Unexpected registration error:", err);
+    if (error || !data.user) {
+      console.log("❌ Auth signUp error:", error?.message);
+      alert("Registration failed: " + error?.message);
       return false;
+    }
+
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .insert({
+        id: data.user?.id,
+        name: name.trim(),
+        email: email.trim(),
+        points: 0,
+        bio: "hello!",
+      });
+
+    if (profileError) {
+      console.log("❌ Error inserting profile:", profileError.message);
+      alert("Error creating profile: " + profileError.message);
+      return false;
+    }
+
+    setUser({ id: data.user.id, name, email, points: 0 });
+    return true;
+  } catch (err) {
+    console.log("Unexpected registration error:", err);
+    alert("Unexpected error during registration.");
+    return false;
+  } finally {
+    setIsLoading(false);
     }
   };
 
@@ -227,8 +201,8 @@ export const AuthProvider = ({ children }: any) => {
     try {
         // Simulate password reset
         if (!email || !email.includes("@")) {
-        alert("Please provide an email address.");
-        return false;
+          alert("Please provide an email address.");
+          return false;
         }
         console.log(`Simulating password reset for: ${email}`);
         alert(
