@@ -15,7 +15,7 @@ interface AuthContextProps {
   user: Profile | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (user: any, password: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string) => Promise<boolean>;
   updateProfile: (profileData: Partial<any>) => Promise<boolean>;
   setUser: (user: any | null) => void;
   logout: () => Promise<void>;
@@ -66,13 +66,10 @@ export const AuthProvider = ({ children }: any) => {
   const login = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-
-      console.log("👉 Login result:", { data, error });
 
       if (error) {
         console.log("❌ Login error:", error.message);
@@ -200,7 +197,7 @@ export const AuthProvider = ({ children }: any) => {
     setIsLoading(true);
     try {
         // Simulate password reset
-        if (!email || !email.includes("@")) {
+        if (!email || !email.includes("@") || !email.includes(".")) {
           alert("Please provide an email address.");
           return false;
         }
