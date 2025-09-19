@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }: any) => {
   // Keep session active
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      //console.log("Session:", session);
       if (session?.user) {
         const { data } = await supabase
           .from("profiles")
@@ -63,8 +64,8 @@ export const AuthProvider = ({ children }: any) => {
 
   // Login
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -79,8 +80,8 @@ export const AuthProvider = ({ children }: any) => {
       // Load profile
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
-        .select()
-        .eq("id", data.user.id)
+        .select('*')
+        .eq("id", data.user?.id)
         .single();
 
       if (profileError || !profile) {
@@ -102,12 +103,14 @@ export const AuthProvider = ({ children }: any) => {
 
   // Register (create user + profile)
   const register = async (name: string, email: string, password: string) => {
-  setIsLoading(true);
   try {
+    setIsLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
     });
+
+    console.log(">>> Auth signUp:", { data, error });
 
     if (error || !data.user) {
       console.log("❌ Auth signUp error:", error?.message);
@@ -118,7 +121,7 @@ export const AuthProvider = ({ children }: any) => {
     const { error: profileError } = await supabase
       .from("profiles")
       .insert({
-        id: data.user.id,
+        id: data.user?.id,
         name: name.trim(),
         email: email.trim(),
         points: 0,
@@ -131,6 +134,7 @@ export const AuthProvider = ({ children }: any) => {
       return false;
     }
 
+    setUser({ id: data.user.id, name, email, points: 0 });
     return true;
   } catch (err) {
     console.log("Unexpected registration error:", err);
@@ -184,6 +188,10 @@ export const AuthProvider = ({ children }: any) => {
     setIsLoading(true);
     try {
         // Simulate password reset
+        if (!email || !email.includes("@")) {
+          alert("Please provide an email address.");
+          return false;
+        }
         console.log(`Simulating password reset for: ${email}`);
         alert(
         `If exists an account with ${email}, we will send you an email with instructions to reset your password...`
@@ -197,7 +205,6 @@ export const AuthProvider = ({ children }: any) => {
         setIsLoading(false);
     }
     };
-
 
   return (
     <AuthContext.Provider
