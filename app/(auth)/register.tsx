@@ -14,7 +14,6 @@ import {
 } from "react-native";
 
 export default function RegisterScreen() {
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +22,8 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     console.log(">>> REGISTRO:", { name, email, password });
-      const ok = await context.register(name.trim(), email.trim(), password.trim());
+    const ok = await context.register({ name: name.trim(), email: email.trim() }, password.trim());
+    console.log(">>> REGISTRO RESULT:", ok);
 
     if (ok) {
       console.log("✅ Registration successful, go to login");
