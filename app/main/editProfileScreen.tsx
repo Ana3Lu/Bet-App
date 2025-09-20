@@ -1,14 +1,13 @@
 import { AuthContext } from "@/contexts/AuthContext";
 import { pickImage, takePhoto, uploadAvatar } from "@/utils/uploadImage";
 import { Ionicons } from "@expo/vector-icons";
-import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { useCameraPermissions } from 'expo-camera';
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useContext, useState } from "react";
 import {
   Image,
   Modal,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -20,6 +19,7 @@ import {
 export default function EditProfileScreen() {
   const { user, updateProfile } = useContext(AuthContext);
   const router = useRouter();
+  const context = useContext(AuthContext);
 
   // Local states
   const [username, setUsername] = useState(user?.name || "");
@@ -28,7 +28,6 @@ export default function EditProfileScreen() {
   const [gender, setGender] = useState(user?.gender || "");
 
   const [showImageOptions, setShowImageOptions] = useState(false);
-  const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
@@ -47,10 +46,6 @@ if (!permission.granted) {
     </View>
   );
 }
-
-  const toggleCameraFacing = () => {
-    setFacing((current) => (current === "back" ? "front" : "back"));
-  };
 
   const handlePickImage = async () => {
     const uri = await pickImage();
@@ -95,27 +90,38 @@ if (!permission.granted) {
       <View style={[styles.decorShape, styles.decorShapeTopLeft]}>
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
       </View>
-      <View style={[styles.decorShape, styles.decorShapeBottomRight]}>
+      <View style={[styles.decorShape, styles.decorShapeTopRight]}>
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
       </View>
 
-      <ScrollView contentContainerStyle={{ paddingBottom: 30 }}>
+      <View>
         <Text style={styles.sectionTitle}><Ionicons name="pencil" size={24} color="white" /><Ionicons name="person-circle-outline" size={24} color="white" /> Edit Profile</Text>
 
         {/* Avatar */}
         <View style={styles.avatarContainer}>
-          <TouchableOpacity onPress={() => setShowImageOptions(true)}>
-            <Image
-              source={selectedImage ? { uri: selectedImage } : require("../../../assets/images/avatar.png")}
-              style={styles.avatar}
-            />
+          <Image
+            source={
+              selectedImage
+                ? { uri: selectedImage } // Recent selected image
+                : context.user?.avatar_url
+                ? { uri: context.user.avatar_url } // Avatar saved in Supabase
+                : require("../../assets/images/avatar.png") // Fallback
+            }
+            style={styles.avatar}
+          />
+
+          {/* Botón de edición (pencil) */}
+          <TouchableOpacity style={styles.editButton} onPress={() => setShowImageOptions(true)}>
+            <LinearGradient colors={["#0d9c5cff", "#293badff"]} style={styles.editCircle}>
+              <Ionicons name="pencil" size={18} color="white" />
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
         <Modal
           visible={showImageOptions}
           transparent
-          animationType="slide"
+          animationType="fade"
           onRequestClose={() => setShowImageOptions(false)}
         >
           <View style={styles.modalOverlay}>
@@ -131,7 +137,7 @@ if (!permission.granted) {
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.modalButton, { backgroundColor: "#dc5990ff" }]}
+                style={[styles.modalButton, { backgroundColor: "#dc8e59ff" }]}
                 onPress={() => setShowImageOptions(false)}
               >
                 <Text style={styles.modalButtonText}>❌ Cancel</Text>
@@ -182,23 +188,14 @@ if (!permission.granted) {
           <Text style={styles.buttonText}>💾 Save</Text>
         </TouchableOpacity>
 
-        {/* Toggle Camera Facing Button */}
-        <CameraView style={{ flex: 1 }} facing={facing} />
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, { backgroundColor: "#0d9a9cff" }]} onPress={toggleCameraFacing}>
-            <Text style={styles.buttonText}><Ionicons name="camera-reverse-outline" size={24} color="white" /> Flip Camera</Text>
-          </TouchableOpacity>
-        </View>
-
-
         {/* Cancel Button */}
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: "#dc5990ff" }]}
+          style={[styles.button, { backgroundColor: "#dc8e59ff" }]}
           onPress={() => router.back()}
         >
           <Text style={styles.buttonText}>❌ Cancel</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -208,17 +205,19 @@ const styles = StyleSheet.create({
     flex: 1, 
     backgroundColor: "#1b266bff",
     paddingHorizontal: 30,
-    paddingTop: 100,
+    paddingTop: 90,
   },
   avatarContainer: {
     alignItems: "center",
-    marginTop: 20,
     marginBottom: 20,
     borderRadius: 60,
+    padding: 6, 
+    backgroundColor: "#38748661", 
+    marginHorizontal: 95
   },
   avatar: {
-    width: 120,
-    height: 120,
+    width: 110,
+    height: 110,
     borderRadius: 60,
   },
   avatarPlaceholder: {
@@ -234,6 +233,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 20,
     elevation: 3,
+    marginTop: 10,
+    marginBottom: 5,
   },
   buttonContainer: {
     position: 'absolute',
@@ -243,18 +244,30 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 64,
   },
+  editButton: {
+    position: "absolute",
+    bottom: -5,
+    right: 0,
+  },
+  editCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 60,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   decorShape: { 
     position: "absolute", 
-    width: 170, 
+    width: 140, 
     height: 40, 
     borderRadius: 60 
   },
   decorShapeTopLeft: { 
-    top: 60, 
+    top: 150, 
     left: -40 
   },
-  decorShapeBottomRight: { 
-    bottom: 30, 
+  decorShapeTopRight: { 
+    top: 215, 
     right: -40 
   },
   circleGradient: { 
@@ -266,7 +279,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold", 
     color: "#fff", 
     marginBottom: 20,
-    marginTop: 20,
     textAlign: "center"
   },
   input: {

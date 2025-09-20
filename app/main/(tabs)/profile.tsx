@@ -25,7 +25,14 @@ export default function ProfileScreen() {
 
       {/* Avatar */}
       <View style={styles.avatarContainer}>
-        <Image source={require("../../../assets/images/avatar.png")} style={styles.avatar} />
+        <Image
+          source={
+            context.user?.avatar_url
+              ? { uri: context.user.avatar_url } // si existe en Supabase
+              : require("../../../assets/images/avatar.png") // fallback local
+          }
+          style={styles.avatar}
+        />
       </View>
 
       {/* User info */}
@@ -51,18 +58,27 @@ export default function ProfileScreen() {
       </Text>
 
       {/* Actions */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: "#4facfe" }]}>
+      <TouchableOpacity style={[styles.button, { backgroundColor: "#b243e9ff" }]}>
         <Text style={styles.buttonText} onPress={() => router.push("/main/editProfileScreen")}>✏️ Edit Profile</Text>
       </TouchableOpacity>
+      
       <TouchableOpacity 
-        style={[styles.button, { backgroundColor: "#b243e9ff" }]} 
+        style={styles.buttonWrapper} 
         onPress={() => {
           context.logout();
           router.replace("/login");
         }}
       >
-        <Text style={styles.buttonText}>🚪 Log Out</Text>
+        <LinearGradient
+          colors={["#4facfe", "#43e97b"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>🚪 Log Out</Text>
+        </LinearGradient>
       </TouchableOpacity>
+
     </View>
   );
 }
@@ -98,7 +114,7 @@ const styles = StyleSheet.create({
     borderRadius: 60, 
     padding: 5, 
     backgroundColor: "#38748661", 
-    marginHorizontal: 100 
+    marginHorizontal: 101 
   },
   avatar: { 
     width: 100, 
@@ -133,5 +149,10 @@ const styles = StyleSheet.create({
     color: "#fff", 
     fontSize: 16, 
     fontWeight: "bold" 
+  },
+  buttonWrapper: {
+  width: "100%",
+  borderRadius: 20,
+  overflow: "hidden"
   }
 });

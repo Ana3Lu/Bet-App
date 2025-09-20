@@ -6,7 +6,7 @@ import { supabase } from "./supabase";
 // Open image picker
 export const pickImage = async () => {
   const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    mediaTypes: ['images'],
     allowsEditing: true,
     quality: 1,
   });
@@ -23,6 +23,7 @@ export const pickImage = async () => {
 // Take photo
 export const takePhoto = async () => {
   const result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ['images'],
     allowsEditing: true,
     quality: 1,
   });

@@ -65,8 +65,8 @@ export const AuthProvider = ({ children }: any) => {
 
   // Login
   const login = async (email: string, password: string) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -77,8 +77,6 @@ export const AuthProvider = ({ children }: any) => {
         alert("Login failed: " + (error.message || "Invalid credentials"));
         return false;
       }
-
-      setIsLoading(false);
 
       if (data.user) {
         console.log("✅ Login success, loading profile...");
@@ -103,21 +101,21 @@ export const AuthProvider = ({ children }: any) => {
         } else {
           setUser(profile);
         }
-
         return true;
       }
-
       return false;
     } catch (err) {
       console.log("Unexpected login error:", err);
       return false;
+    } finally {
+      setIsLoading(false);
     }
   }
 
   // Register (create user + profile)
   const register = async (name: string, email: string, password: string) => {
+  setIsLoading(true);
   try {
-    setIsLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
