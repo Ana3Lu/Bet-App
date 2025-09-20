@@ -9,6 +9,7 @@ interface Profile {
   phone?: string;
   gender?: string;
   points?: number;
+  avatar_url?: string;
 }
 
 interface AuthContextProps {
