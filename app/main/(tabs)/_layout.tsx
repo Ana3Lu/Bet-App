@@ -25,7 +25,6 @@ export default function TabLayout() {
           ),
         }}
       />
-
         <Tabs.Screen
         name="explore"
         options={{
@@ -35,7 +34,15 @@ export default function TabLayout() {
           ),
         }}
       />
-
+      <Tabs.Screen
+        name="chats"
+        options={{
+          title: "Chat",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome name="comment" size={22} color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="profile"
         options={{
@@ -64,5 +71,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+  
   );
 }

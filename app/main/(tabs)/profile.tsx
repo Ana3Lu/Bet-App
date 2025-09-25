@@ -53,8 +53,8 @@ export default function ProfileScreen() {
       <Text style={styles.userLabel}>
         Gender: <Text style={styles.userValue}>{context.user?.gender ?? "—"}</Text>
       </Text>
-      <Text style={styles.userLabel}>
-        Points: <Text style={styles.userValue}>{context.user?.points ?? 0}</Text>
+      <Text style={[styles.userLabel, { marginTop: 10, color: "#e0ff55ff" }]}>
+        Points: <Text style={[styles.userValue, { fontWeight: "bold" }]}>{context.user?.points ?? 0}</Text>
       </Text>
 
       {/* Actions */}
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   userLabel: { 
     fontSize: 16, 
     fontWeight: "bold", 
-    color: "#ccc", 
+    color: "#81c2faff", 
     marginBottom: 5,
     marginLeft: 10
   },
