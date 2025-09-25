@@ -152,55 +152,33 @@ export default function ChatScreen() {
                 isMyMessage ? styles.myMessageRow : styles.otherMessageRow
               ]}
             >
-              {/* Mensajes del otro usuario → avatar primero, luego burbuja */}
-              {!isMyMessage && (
-                <>
-                  <Image
-                    source={
-                      item.avatar_url
-                        ? { uri: item.avatar_url }
-                        : require("../../../../assets/images/avatar.png")
-                    }
-                    style={styles.listItemImage}
-                  />
-                  <View style={[styles.bubble, styles.otherBubble]}>
-                    <Text style={styles.messageText}>{item.text}</Text>
-                    <Text style={styles.timestamp}>
-                      {item.createdAt
-                        ? item.createdAt.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : ""}
-                    </Text>
-                  </View>
-                </>
-              )}
+              {/* Mensaje */}
+              <View
+                style={[
+                  styles.bubble,
+                  isMyMessage ? styles.myBubble : styles.otherBubble
+                ]}
+              >
+                <Text style={styles.messageText}>{item.text}</Text>
+                <Text style={styles.timestamp}>
+                  {item.createdAt
+                    ? item.createdAt.toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })
+                    : ""}
+                </Text>
+              </View>
 
-              {/* Mis mensajes → primero burbuja, luego avatar */}
-              {isMyMessage && (
-                <>
-                  <View style={[styles.bubble, styles.myBubble]}>
-                    <Text style={styles.messageText}>{item.text}</Text>
-                    <Text style={styles.timestamp}>
-                      {item.createdAt
-                        ? item.createdAt.toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })
-                        : ""}
-                    </Text>
-                  </View>
-                  <Image
-                    source={
-                      item.avatar_url
-                        ? { uri: item.avatar_url }
-                        : require("../../../../assets/images/avatar.png")
-                    }
-                    style={styles.listItemImage}
-                  />
-                </>
-              )}
+              {/* Avatar */}
+              <Image
+                source={
+                  item.avatar_url
+                    ? { uri: item.avatar_url }
+                    : require("../../../../assets/images/avatar.png")
+                }
+                style={styles.listItemImage}
+              />
             </View>
           );
         }}
@@ -242,17 +220,17 @@ const styles = StyleSheet.create({
     marginLeft: 10 
   },
   messageRow: { 
-  flexDirection: "row", 
-  alignItems: "flex-end", 
-  marginVertical: 6 
+    flexDirection: "row", 
+    marginVertical: 6, 
+    alignItems: "flex-end"
   },
   myMessageRow: { 
-    justifyContent: "flex-end", 
-    alignSelf: "flex-end"
+    flexDirection: "row-reverse",
+    justifyContent: "flex-start"
   },
   otherMessageRow: { 
-    justifyContent: "flex-start", 
-    alignSelf: "flex-start"
+    flexDirection: "row", 
+    justifyContent: "flex-start"
   },
   avatar: { 
     marginRight: 6 
@@ -281,7 +259,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    margin: 10
+    marginRight: 10
   },
   inputContainer: {
     flexDirection: "row",
