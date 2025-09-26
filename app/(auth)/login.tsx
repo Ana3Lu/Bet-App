@@ -21,8 +21,7 @@ export default function Login() {
   const context = useContext(AuthContext);
 
   const handleLogin = async () => {
-    console.log("Login:", { email, password });
-
+    //console.log("Login:", { email, password });
     const ok = await context.login(email, password);
     
     if (ok) {

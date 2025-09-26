@@ -22,7 +22,7 @@ export default function RegisterScreen() {
   const context = useContext(AuthContext);
 
   const handleRegister = async () => {
-    console.log(">>> Register:", { name, email, password });
+    //console.log(">>> Register:", { name, email, password });
       const ok = await context.register(name.trim(), email.trim(), password.trim());
 
     if (ok) {

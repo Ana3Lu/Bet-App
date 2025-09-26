@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }: any) => {
       password,
     });
 
-    console.log(">>> Auth signUp:", { data, error });
+    //console.log(">>> Auth signUp:", { data, error });
 
     if (error || !data.user) {
       console.log("❌ Auth signUp error:", error?.message);
@@ -146,6 +146,7 @@ export const AuthProvider = ({ children }: any) => {
     }
 
     setUser({ id: data.user.id, name, email, points: 0 });
+    alert("Registration successful! You can now log in.");
     return true;
   } catch (err) {
     console.log("Unexpected registration error:", err);
