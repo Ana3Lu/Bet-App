@@ -97,7 +97,7 @@ export default function CameraModal({
                     contentType: 'image/jpg'
                 })
 
-            console.log(">>> Storage upload:", { data });
+            //console.log(">>> Storage upload:", { data });
 
             if (!error && data?.fullPath) {
                 const { data: publicData } = await supabase
