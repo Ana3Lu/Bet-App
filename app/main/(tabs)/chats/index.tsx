@@ -2,6 +2,7 @@ import { DataContext } from '@/contexts/DataContext';
 import { Ionicons } from '@expo/vector-icons';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useContext, useEffect } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -19,6 +20,24 @@ export default function Users() {
 
   return (
     <View style={styles.container}>
+      {/* Círculos decorativos */}
+      <View style={[styles.decorShape, styles.decorShapeTopRight]}>
+        <LinearGradient
+            colors={["#0d9c5c7b", "#293bad7b"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ flex: 1, borderRadius: 60 }}
+        />
+      </View>
+      <View style={[styles.decorShape, styles.decorShapeBottomLeft]}>
+        <LinearGradient
+            colors={["#0d9c5c7b", "#293bad7b"]}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 0 }}
+            style={{ flex: 1, borderRadius: 60 }}
+        />
+      </View>
+
       <Text style={styles.title}>
         <Ionicons name="people-circle" size={30} color="white" /> Users</Text>
       <FlatList
@@ -58,7 +77,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#1b266bff",
-    padding: 30
+    padding: 20
+  },
+  decorShape: {
+    position: "absolute",
+    width: 230,
+    height: 40,
+    borderRadius: 60
+  },
+  decorShapeTopRight: {
+    top: 50,
+    right: -40,
+  },
+  decorShapeBottomLeft: {
+    bottom: 30,
+    left: -40
   },
   header: {
     fontSize: 20,
@@ -73,7 +106,7 @@ const styles = StyleSheet.create({
   listItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderColor: '#2f3038ff'
+    borderColor: '#383839ff'
   },
   listItemImageContainer: {
     flexDirection: 'row',

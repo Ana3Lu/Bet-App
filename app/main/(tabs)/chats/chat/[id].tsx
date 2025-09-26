@@ -1,9 +1,11 @@
 import { AuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/utils/supabase';
 import { Ionicons } from "@expo/vector-icons";
-import { useLocalSearchParams } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useContext, useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+
   
 interface Message {
     id: string,   // UUID
@@ -36,6 +38,8 @@ export default function ChatScreen() {
   const [chat, setChat] = useState<chat | null>(null);
   const [otherUserName, setOtherUserName] = useState<string>("");
   const [newMessage, setNewMessage] = useState("");
+
+  const router = useRouter();
 
   // Fetch chat + messages
   useEffect(() => {
@@ -87,7 +91,8 @@ export default function ChatScreen() {
         editedAt: m.edited_at ? new Date(m.edited_at) : null,
         deletedAt: m.deleted_at ? new Date(m.deleted_at) : null,
         avatar_url: m.sender?.avatar_url || null,
-        senderName: m.sender?.name || m.sender?.email || "Usuario"
+        senderName: m.sender?.name || m.sender?.email || "User",
+        sentBy: m.sent_by,
       }));
 
       setChat({ ...chatData, messages: parsedMessages });
@@ -109,32 +114,66 @@ export default function ChatScreen() {
     if (!newMessage.trim() || !chat || !user) return;
 
     const { data: message } = await supabase
-      .from("messages")
-      .insert([
+        .from("messages")
+        .insert([
         {
-          text: newMessage,
-          sent_by: user.id,
-          chat_id: chat.id
+            text: newMessage,
+            sent_by: user.id,
+            chat_id: chat.id
         }
-      ])
-      .select()
-      .single();
+        ])
+        .select(`
+        *,
+        sender:profiles!sent_by (
+            id,
+            name,
+            email,
+            avatar_url
+        )
+        `)
+        .single();
 
     if (message) {
-      setChat((prev) =>
-        prev ? { ...prev, messages: [...prev.messages, message] } : prev
-      );
-      setNewMessage("");
+        // Same processing as fetch messages
+        const processedMessage: Message = {
+        ...message,
+        createdAt: message.created_at ? new Date(message.created_at) : null,
+        seenAt: message.seen_at ? new Date(message.seen_at) : null,
+        sentAt: message.sent_at ? new Date(message.sent_at) : null,
+        editedAt: message.edited_at ? new Date(message.edited_at) : null,
+        deletedAt: message.deleted_at ? new Date(message.deleted_at) : null,
+        avatar_url: message.sender?.avatar_url || null,
+        senderName: message.sender?.name || message.sender?.email || "Usuario",
+        sentBy: message.sent_by,
+        chatId: message.chat_id
+        };
+
+        setChat((prev) =>
+        prev ? { ...prev, messages: [...prev.messages, processedMessage] } : prev
+        );
+        setNewMessage("");
     }
-  };
+    };
 
   if (!chat) return <Text style={{ color: "white", padding: 20 }}>Loading chat...</Text>;
 
   return (
     <View style={styles.container}>
+      {/* Fondo */}
+      <View style={styles.background}>
+        <LinearGradient
+          colors={["#680b78a1", "#19246c7b"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 0, y: 1 }}
+          style={{ flex: 1}}
+        />
+      </View>
+
       {/* Header */}
       <View style={styles.header}>
-        <Ionicons name="person-circle" size={28} color="white" />
+        <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
         <Text style={styles.headerText}>{otherUserName}</Text>
       </View>
 
@@ -143,60 +182,95 @@ export default function ChatScreen() {
         data={chat.messages}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
-          const isMyMessage = item.sentBy === user?.id;
-          return (
+            const isMyMessage = item.sentBy === user?.id;
+            return (
             <View
-              style={[
+                style={[
                 styles.messageRow,
                 isMyMessage ? styles.myMessageRow : styles.otherMessageRow
-              ]}
-            >
-              {/* Mensaje */}
-              <View
-                style={[
-                  styles.bubble,
-                  isMyMessage ? styles.myBubble : styles.otherBubble
                 ]}
-              >
-                <Text style={styles.messageText}>{item.text}</Text>
-                <Text style={styles.timestamp}>
-                  {item.createdAt
-                    ? item.createdAt.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })
-                    : ""}
-                </Text>
-              </View>
+            >
+                {isMyMessage ? (
+                <>
+                    {/* Mi mensaje primero */}
+                    <View style={[styles.bubble, styles.myBubble]}>
+                    <Text style={styles.messageText}>{item.text}</Text>
+                    <Text style={styles.timestamp}>
+                        {item.createdAt
+                        ? item.createdAt.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            })
+                        : ""}
+                    </Text>
+                    </View>
 
-              {/* Avatar */}
-              <Image
-                source={
-                  item.avatar_url
-                    ? { uri: item.avatar_url }
-                    : require("../../../../../assets/images/avatar.png")
-                }
-                style={styles.listItemImage}
-              />
+                    {/* Luego avatar */}
+                    <Image
+                    source={
+                        item.avatar_url
+                        ? { uri: item.avatar_url }
+                        : require("../../../../../assets/images/avatar.png")
+                    }
+                    style={styles.listItemImage}
+                    />
+                </>
+                ) : (
+                <>
+                    {/* Avatar primero */}
+                    <Image
+                    source={
+                        item.avatar_url
+                        ? { uri: item.avatar_url }
+                        : require("../../../../../assets/images/avatar.png")
+                    }
+                    style={styles.listItemImage}
+                    />
+
+                    {/* Luego mensaje */}
+                    <View style={[styles.bubble, styles.otherBubble]}>
+                    <Text style={styles.messageText}>{item.text}</Text>
+                    <Text style={styles.timestamp}>
+                        {item.createdAt
+                        ? item.createdAt.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            })
+                        : ""}
+                    </Text>
+                    </View>
+                </>
+                )}
             </View>
-          );
+            );
         }}
         contentContainerStyle={{ padding: 15, paddingBottom: 80 }}
-      />
+        />
 
       {/* Input de mensaje */}
       <View style={styles.inputContainer}>
         <TextInput
-          style={styles.input}
-          placeholder="Write a message..."
-          placeholderTextColor="#aaa"
-          value={newMessage}
-          onChangeText={setNewMessage}
+            style={styles.input}
+            placeholder="Write a message..."
+            placeholderTextColor="#aaa"
+            value={newMessage}
+            onChangeText={setNewMessage}
         />
-        <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-          <Ionicons name="send" size={20} color="white" />
+
+        <TouchableOpacity 
+            style={styles.buttonWrapper} 
+            onPress={handleSendMessage}
+        >
+            <LinearGradient
+            colors={["#4facfe", "#43e97b"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.button}
+            >
+            <Ionicons name="send" size={20} color="white" />
+            </LinearGradient>
         </TouchableOpacity>
-      </View>
+        </View>
     </View>
   );
 }
@@ -204,18 +278,25 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: { 
     flex: 1, 
-    backgroundColor: "#1b266bff" 
+    backgroundColor: "#1b266bff"
+  },
+  background: { 
+    position: "absolute", 
+    width: "100%", 
+    height: "100%" 
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 15,
+    paddingHorizontal: 30,
+    paddingTop: 30,
+    paddingBottom: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#333"
   },
   headerText: { 
     color: "white", 
-    fontSize: 18, 
+    fontSize: 22, 
     marginLeft: 10 
   },
   messageRow: { 
@@ -228,26 +309,27 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end"
   },
   otherMessageRow: { 
-    flexDirection: "row-reverse", 
+    flexDirection: "row", 
     justifyContent: "flex-start"
-  },
-  avatar: { 
-    marginRight: 6 
   },
   bubble: {
     padding: 10,
     borderRadius: 15,
-    maxWidth: "75%"
+    maxWidth: "75%",
+    marginHorizontal: 10
   },
   myBubble: {
-    backgroundColor: "#4facfe",
+    backgroundColor: "#722de09a",
     borderBottomRightRadius: 0
   },
   otherBubble: {
-    backgroundColor: "#2c2f7c",
+    backgroundColor: "#4a499d6c",
     borderBottomLeftRadius: 0
   },
-  messageText: { color: "white", fontSize: 15 },
+  messageText: { 
+    color: "white", 
+    fontSize: 15 
+  },
   timestamp: {
     fontSize: 10,
     color: "#ddd",
@@ -255,10 +337,9 @@ const styles = StyleSheet.create({
     textAlign: "right"
   },
   listItemImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 10
+    width: 30,
+    height: 30,
+    borderRadius: 20
   },
   inputContainer: {
     flexDirection: "row",
@@ -276,10 +357,22 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     color: "white"
   },
-  sendButton: {
-    marginLeft: 8,
-    backgroundColor: "#4facfe",
-    padding: 10,
-    borderRadius: 20,
-  }
+  button: { 
+    flex: 1, 
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 25, 
+  },
+  buttonText: { 
+    color: "#fff", 
+    fontSize: 16, 
+    fontWeight: "bold" 
+  },
+  buttonWrapper: {
+    width: 40,
+    height: 40,
+    borderRadius: 25, 
+    overflow: "hidden",
+    marginLeft: 10, 
+    },
 });

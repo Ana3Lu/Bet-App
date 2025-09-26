@@ -133,10 +133,13 @@ export default function CameraModal({
                     <Image source={{ uri: preview.uri }} style={styles.previewImage} />     
                     <View style={styles.previewButtons}>
                         <TouchableOpacity onPress={() => setPreview(null)} style={styles.iconButton}>
-                        <Ionicons name="refresh-circle" size={80} color="white" />
+                            <Ionicons name="refresh-circle" size={80} color="white" />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={handleSaveImageBucket} style={styles.iconButton}>
-                        <Ionicons name="checkmark-circle" size={80} color="white" />
+                            <Ionicons name="checkmark-circle" size={80} color="white" />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={onCancel} style={styles.iconButton}>
+                            <Ionicons name="close-circle" size={80} color="white" />
                         </TouchableOpacity>
                     </View>
                 </>
