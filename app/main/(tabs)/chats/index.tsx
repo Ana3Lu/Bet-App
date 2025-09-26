@@ -1,65 +1,51 @@
-import { AuthContext } from '@/contexts/AuthContext';
-import { supabase } from '@/utils/supabase';
+import { DataContext } from '@/contexts/DataContext';
 import { Ionicons } from '@expo/vector-icons';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import React, { useContext, useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-interface Profile {
-  id: string;
-  name: string;
-  email: string;
-  avatar_url?: string;
-}
+const blurhash =
+  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj['; 
 
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * A function component that displays a list of users from Supabase.
- * It excludes the current user from the list.
- * Each user is displayed as a list item with their name and an optional avatar.
- * When a user is clicked, the app navigates to the chat screen with the selected user.
- */
-/*******  0bd6c025-a691-43c0-8d2e-9d11cd1717b8  *******/
 export default function Users() {
-  const [users, setUsers] = useState<Profile[]>([]);
+  const { users, getUsers } = useContext(DataContext);
   const router = useRouter();
-  const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-        const { data, error } = await supabase.from('profiles').select('*');
-        if (error) {
-        console.error(error);
-        } else {
-        const filtered = (data as Profile[]).filter((u) => u.id !== user?.id);
-        setUsers(filtered);
-        }
-    };
-    fetchUsers();
-  }, [user?.id]);
-
+    getUsers();
+  }, [getUsers]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}><Ionicons name="people-circle" size={30} color="white" /> Users</Text>
+      <Text style={styles.title}>
+        <Ionicons name="people-circle" size={30} color="white" /> Users</Text>
       <FlatList
         data={users}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.listItem}
-            onPress={() => router.push({pathname: '/main/(tabs)/chats/chat', params: { userId: item.id }})}
+            onPress={() => router.push({
+                pathname: "/main/(tabs)/chats/chat/[id]",
+                params: { id: item.id }}
+            )}
           >
             <View style={styles.listItemImageContainer}>
                 <Image
                     source={
                         item.avatar_url
-                        ? { uri: item.avatar_url } // si existe en Supabase
-                        : require("../../../../assets/images/avatar.png") // fallback local
+                        ? { uri: item.avatar_url } // if exists in Supabase
+                        : require("../../../../assets/images/avatar.png") // Local fallback
                     }
                     style={styles.listItemImage}
+                    placeholder={{ blurhash }}
+                    contentFit="cover"
+                    transition={800}
                 />
                 <Text style={styles.listItemText}>{item.name || item.email}</Text>
+                <AntDesign name="right" size={18} color="white" style={{ position: 'absolute', right: 0 }} />
             </View>
           </TouchableOpacity>
         )}
@@ -87,17 +73,18 @@ const styles = StyleSheet.create({
   listItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderColor: '#ddd',
+    borderColor: '#2f3038ff'
   },
   listItemImageContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   listItemText: {
     fontSize: 16,
     color: '#fff',
     padding: 10,
-    borderRadius: 10
+    borderRadius: 10,
+    fontWeight: '500'
   },
   listItemImage: {
     width: 40,

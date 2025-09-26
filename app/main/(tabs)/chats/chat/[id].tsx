@@ -29,10 +29,9 @@ interface chat {
     messages: Message[]
 }
 
-
 export default function ChatScreen() {
   const { user } = useContext(AuthContext);
-  const { userId } = useLocalSearchParams<{ userId: string }>();
+  const { id } = useLocalSearchParams<{ id: string }>();
 
   const [chat, setChat] = useState<chat | null>(null);
   const [otherUserName, setOtherUserName] = useState<string>("");
@@ -40,7 +39,7 @@ export default function ChatScreen() {
 
   // Fetch chat + messages
   useEffect(() => {
-    if (!user || !userId) return;
+    if (!user || !id) return;
 
     const fetchOrCreateChat = async () => {
       // Look for existing chat
@@ -48,7 +47,7 @@ export default function ChatScreen() {
         .from("chats")
         .select("*")
         .or(
-          `and(user_id.eq.${user.id},user_id2.eq.${userId}),and(user_id.eq.${userId},user_id2.eq.${user.id})`
+          `and(user_id.eq.${user.id},user_id2.eq.${id}),and(user_id.eq.${id},user_id2.eq.${user.id})`
         )
         .limit(1);
 
@@ -57,7 +56,7 @@ export default function ChatScreen() {
       if (!chatData) {
         const { data: newChat } = await supabase
           .from("chats")
-          .insert([{ user_id: user.id, user_id2: userId }])
+          .insert([{ user_id: user.id, user_id2: id }])
           .select()
           .single();
 
@@ -97,14 +96,14 @@ export default function ChatScreen() {
       const { data: otherUser } = await supabase
         .from("profiles")
         .select("name, email")
-        .eq("id", userId)
+        .eq("id", id)
         .single();
 
       if (otherUser) setOtherUserName(otherUser.name || otherUser.email);
     };
 
     fetchOrCreateChat();
-  }, [user, userId]);
+  }, [user, id]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !chat || !user) return;
@@ -129,7 +128,7 @@ export default function ChatScreen() {
     }
   };
 
-  if (!chat) return <Text style={{ color: "white", padding: 20 }}>Cargando chat...</Text>;
+  if (!chat) return <Text style={{ color: "white", padding: 20 }}>Loading chat...</Text>;
 
   return (
     <View style={styles.container}>
@@ -175,7 +174,7 @@ export default function ChatScreen() {
                 source={
                   item.avatar_url
                     ? { uri: item.avatar_url }
-                    : require("../../../../assets/images/avatar.png")
+                    : require("../../../../../assets/images/avatar.png")
                 }
                 style={styles.listItemImage}
               />
@@ -189,7 +188,7 @@ export default function ChatScreen() {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Escribe un mensaje..."
+          placeholder="Write a message..."
           placeholderTextColor="#aaa"
           value={newMessage}
           onChangeText={setNewMessage}
@@ -225,11 +224,11 @@ const styles = StyleSheet.create({
     alignItems: "flex-end"
   },
   myMessageRow: { 
-    flexDirection: "row-reverse",
-    justifyContent: "flex-start"
+    flexDirection: "row",
+    justifyContent: "flex-end"
   },
   otherMessageRow: { 
-    flexDirection: "row", 
+    flexDirection: "row-reverse", 
     justifyContent: "flex-start"
   },
   avatar: { 
