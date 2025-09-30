@@ -41,7 +41,20 @@ export default function ChatScreen() {
 
   const router = useRouter();
 
-  // Fetch chat + messages
+  const parseMessage = (m: any): Message => ({ 
+    ...m,
+    createdAt: m.created_at ? new Date(m.created_at) : null,
+    seenAt: m.seen_at ? new Date(m.seen_at) : null,
+    sentAt: m.sent_at ? new Date(m.sent_at) : null,
+    editedAt: m.edited_at ? new Date(m.edited_at) : null,
+    deletedAt: m.deleted_at ? new Date(m.deleted_at) : null,
+    avatar_url: m.sender?.avatar_url || null,
+    senderName: m.sender?.name || m.sender?.email || "User",
+    sentBy: m.sent_by || m.sender?.id,
+    chatId: m.chat_id || m.chat?.id
+  });
+
+  // Bring chat and messages
   useEffect(() => {
     if (!user || !id) return;
 
@@ -82,20 +95,10 @@ export default function ChatScreen() {
         .eq("chat_id", chatData.id)
         .order("created_at", { ascending: true });
 
-      // Convert strings to Date
-      const parsedMessages = (messages || []).map((m) => ({
-        ...m,
-        createdAt: m.created_at ? new Date(m.created_at) : null,
-        seenAt: m.seen_at ? new Date(m.seen_at) : null,
-        sentAt: m.sent_at ? new Date(m.sent_at) : null,
-        editedAt: m.edited_at ? new Date(m.edited_at) : null,
-        deletedAt: m.deleted_at ? new Date(m.deleted_at) : null,
-        avatar_url: m.sender?.avatar_url || null,
-        senderName: m.sender?.name || m.sender?.email || "User",
-        sentBy: m.sent_by,
-      }));
-
-      setChat({ ...chatData, messages: parsedMessages });
+      setChat({ 
+        ...chatData, 
+        messages: (messages || []).map(parseMessage) 
+      });
 
       // Bring user name
       const { data: otherUser } = await supabase
@@ -110,50 +113,68 @@ export default function ChatScreen() {
     fetchOrCreateChat();
   }, [user, id]);
 
+  useEffect(() => {
+    if (!chat) return;
+
+    //console.log("📡 Subscribing to Realtime for chat:", chat.id);
+
+    const channel = supabase
+      .channel("chat-${chat.id}")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "messages",
+          filter: `chat_id=eq.${chat.id}`,
+        },
+        async (payload) => {
+          //console.log("Realtime payload:", payload);
+
+          // Receive new message
+          const newRow = payload.new as any;
+
+          // Bring sender info 
+          const { data: sender } = await supabase
+            .from("profiles")
+            .select("id, name, email, avatar_url")
+            .eq("id", newRow.sent_by)
+            .single();
+
+          const newMsg = parseMessage({
+            ...newRow,
+            sender
+          });
+
+          setChat((prev) =>
+            prev ? { ...prev, messages: [...prev.messages, newMsg] } : prev 
+          );
+        }
+      )
+      .subscribe();
+
+      return () => {
+        //console.log("Unsubscribing from Realtime for chat:", chat?.id);
+        supabase.removeChannel(channel);
+      };
+  }, [chat]);
+
+  // Send message
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !chat || !user) return;
 
-    const { data: message } = await supabase
+    await supabase
         .from("messages")
         .insert([
-        {
+          {
             text: newMessage,
             sent_by: user.id,
             chat_id: chat.id
-        }
-        ])
-        .select(`
-        *,
-        sender:profiles!sent_by (
-            id,
-            name,
-            email,
-            avatar_url
-        )
-        `)
-        .single();
+          }
+        ]);
 
-    if (message) {
-        // Same processing as fetch messages
-        const processedMessage: Message = {
-        ...message,
-        createdAt: message.created_at ? new Date(message.created_at) : null,
-        seenAt: message.seen_at ? new Date(message.seen_at) : null,
-        sentAt: message.sent_at ? new Date(message.sent_at) : null,
-        editedAt: message.edited_at ? new Date(message.edited_at) : null,
-        deletedAt: message.deleted_at ? new Date(message.deleted_at) : null,
-        avatar_url: message.sender?.avatar_url || null,
-        senderName: message.sender?.name || message.sender?.email || "Usuario",
-        sentBy: message.sent_by,
-        chatId: message.chat_id
-        };
-
-        setChat((prev) =>
-        prev ? { ...prev, messages: [...prev.messages, processedMessage] } : prev
-        );
-        setNewMessage("");
-    }
-    };
+    setNewMessage(""); // Realtime adds message
+  };
 
   if (!chat) return <Text style={{ color: "white", padding: 20 }}>Loading chat...</Text>;
 
