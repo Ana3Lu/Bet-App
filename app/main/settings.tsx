@@ -1,5 +1,6 @@
 import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function SettingsScreen() {
@@ -8,11 +9,18 @@ export default function SettingsScreen() {
       <StatusBar barStyle="light-content" backgroundColor="#1b266bff" translucent />
 
       {/* Decoración */}
-      <View style={[styles.decorShape, styles.decorShapeTopLeft]}>
+      <View style={[styles.decorShape, styles.decorShapeBottomLeft]}>
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
       </View>
-      <View style={[styles.decorShape, styles.decorShapeBottomRight]}>
+      <View style={[styles.decorShape, styles.decorShapeTopRight]}>
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
+      </View>
+
+      {/* Header */}
+      <View style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.push("/main/(tabs)/home")}>
+          <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
       </View>
 
       <Text style={styles.title}><Ionicons name="settings-outline" size={30} color="white" /> Settings</Text>
@@ -64,12 +72,12 @@ const styles = StyleSheet.create({
     height: 40, 
     borderRadius: 60 
   },
-  decorShapeTopLeft: { 
-    top: 80, 
+  decorShapeBottomLeft: { 
+    bottom: 130, 
     left: -40 
   },
-  decorShapeBottomRight: { 
-    bottom: 110, 
+  decorShapeTopRight: { 
+    top: 90, 
     right: -40  
   },
   circleGradient: { 
@@ -98,5 +106,10 @@ const styles = StyleSheet.create({
     fontSize: 16, 
     color: "#fff", 
     marginLeft: 10 
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 30
   }
 });

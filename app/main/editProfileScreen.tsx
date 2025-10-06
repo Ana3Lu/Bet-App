@@ -34,10 +34,20 @@ export default function EditProfileScreen() {
 
       {/* Círculos decorativos */}
       <View style={[styles.decorShape, styles.decorShapeTopLeft]}>
-        <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
+        <LinearGradient
+          colors={["#0d9c5c7b", "#293bad7b"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{ flex: 1, borderRadius: 60 }}
+        />
       </View>
       <View style={[styles.decorShape, styles.decorShapeTopRight]}>
-        <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
+        <LinearGradient
+          colors={["#0d9c5c7b", "#293bad7b"]}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 0 }}
+          style={{ flex: 1, borderRadius: 60 }}
+        />
       </View>
 
       <Text style={styles.sectionTitle}><Ionicons name="pencil" size={24} color="white" /><Ionicons name="person-circle-outline" size={24} color="white" /> Edit Profile</Text>

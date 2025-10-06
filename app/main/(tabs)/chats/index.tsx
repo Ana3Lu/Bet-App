@@ -29,14 +29,6 @@ export default function Users() {
             style={{ flex: 1, borderRadius: 60 }}
         />
       </View>
-      <View style={[styles.decorShape, styles.decorShapeBottomLeft]}>
-        <LinearGradient
-            colors={["#0d9c5c7b", "#293bad7b"]}
-            start={{ x: 1, y: 0 }}
-            end={{ x: 0, y: 0 }}
-            style={{ flex: 1, borderRadius: 60 }}
-        />
-      </View>
 
       <Text style={styles.title}>
         <Ionicons name="people-circle" size={30} color="white" /> Users</Text>
@@ -88,10 +80,6 @@ const styles = StyleSheet.create({
   decorShapeTopRight: {
     top: 50,
     right: -40,
-  },
-  decorShapeBottomLeft: {
-    bottom: 30,
-    left: -40
   },
   header: {
     fontSize: 20,

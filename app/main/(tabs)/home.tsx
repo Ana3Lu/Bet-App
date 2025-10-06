@@ -1,6 +1,7 @@
+import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
 
 export default function HomeScreen() {
   return (
@@ -29,6 +30,20 @@ export default function HomeScreen() {
         />
       </View>
 
+      {/* Botón de notificaciones */}
+      <TouchableOpacity style={styles.notificationButton} onPress={() => router.replace("../notifications")}>
+        <LinearGradient colors={["#0d9c5cff", "#293badff"]} style={styles.editCircle}>
+          <Ionicons name="notifications" size={22} color="white" />
+        </LinearGradient>
+      </TouchableOpacity>
+
+      {/* Botón de configuración */}
+      <TouchableOpacity style={styles.configButton} onPress={() => router.replace("../settings")}>
+        <LinearGradient colors={["#0d9c5cff", "#293badff"]} style={styles.editCircle}>
+          <Ionicons name="cog" size={22} color="white" />
+        </LinearGradient>
+      </TouchableOpacity>
+      
       {/* Logo */}
       <Image 
         source={require("../../../assets/images/Bety.png")}
@@ -43,14 +58,14 @@ export default function HomeScreen() {
       </Text>
 
       {/* Accesos rápidos */}
-      <TouchableOpacity style={[styles.button, { backgroundColor: "#4facfe" }]}>
-        <Text style={styles.buttonText}>⚡ Quick Bet ⚡</Text>
+      <TouchableOpacity style={[styles.button, { backgroundColor: "#4facfe" }]} onPress={() => router.push("../explore")}>
+        <Text style={styles.buttonText}>🎯  Explore  🎯</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.button, { backgroundColor: "#0d9a9cff" }]}>
-        <Text style={styles.buttonText}>📊 My Statistics 📊</Text>
+        <Text style={styles.buttonText}>📊  My Statistics  📊</Text>
       </TouchableOpacity>
       <TouchableOpacity style={[styles.button, { backgroundColor: "#b243e9ff" }]}>
-        <Text style={styles.buttonText}>🏆 Leaderboard 🏆</Text>
+        <Text style={styles.buttonText}>🏆  Leaderboard  🏆</Text>
       </TouchableOpacity>
     </View>
   );
@@ -113,5 +128,22 @@ const styles = StyleSheet.create({
     color: "#fff", 
     fontSize: 16, 
     fontWeight: "bold" 
+  },
+  configButton: {
+    position: "absolute",
+    top: 50,
+    right: 20,
+  },
+  notificationButton: {
+    position: "absolute",
+    top: 50,
+    right: 70,
+  },
+  editCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 60,
+    justifyContent: "center",
+    alignItems: "center",
   }
 });

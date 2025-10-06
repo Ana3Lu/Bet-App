@@ -1,8 +1,12 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Tabs } from "expo-router";
+import { useContext } from "react";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 export default function TabLayout() {
+
+  const { user } = useContext(AuthContext);
   return (
     <Tabs
       screenOptions={{
@@ -25,21 +29,44 @@ export default function TabLayout() {
           ),
         }}
       />
-        <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="search" size={22} color={color} />
-          ),
-        }}
-      />
       <Tabs.Screen
         name="chats"
         options={{
-          title: "Chat",
+          title: "Chats",
           tabBarIcon: ({ color }) => (
             <FontAwesome name="comment" size={22} color={color} />
+          ),
+        }}
+      />
+      {/* Según rol */}
+      {user?.role === "CLIENT" && (
+        <Tabs.Screen
+          name="bet-client"
+          options={{
+            title: "Bets",
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="trophy" size={22} color={color} />
+            ),
+          }}
+        />
+      )}
+      {user?.role === "ADMIN" && (
+        <Tabs.Screen
+          name="bet-admin"
+          options={{
+            title: "Bets",
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="trophy" size={22} color={color} />
+            ),
+          }}
+        />
+      )}
+      <Tabs.Screen
+        name="wallet"
+        options={{
+          title: "Wallet",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="wallet" size={22} color={color} />
           ),
         }}
       />
@@ -52,25 +79,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="notifications"
-        options={{
-          title: "Notifications",
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="notifications" size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome name="cog" size={22} color={color} />
-          ),
-        }}
-      />
     </Tabs>
-  
   );
 }

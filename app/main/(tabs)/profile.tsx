@@ -17,10 +17,20 @@ export default function ProfileScreen() {
 
       {/* Círculos decorativos */}
       <View style={[styles.decorShape, styles.decorShapeTopLeft]}>
-        <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
+        <LinearGradient
+          colors={["#0d9c5c7b", "#293bad7b"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={{ flex: 1, borderRadius: 60 }}
+        />
       </View>
-      <View style={[styles.decorShape, styles.decorShapeBottomRight]}>
-        <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={styles.circleGradient} />
+      <View style={[styles.decorShape, styles.decorShapeTopRight]}>
+        <LinearGradient
+          colors={["#0d9c5c7b", "#293bad7b"]}
+          start={{ x: 1, y: 0 }}
+          end={{ x: 0, y: 0 }}
+          style={{ flex: 1, borderRadius: 60 }}
+        />
       </View>
 
       {/* Avatar */}
@@ -55,6 +65,9 @@ export default function ProfileScreen() {
       </Text>
       <Text style={[styles.userLabel, { marginTop: 10, color: "#e0ff55ff" }]}>
         Points: <Text style={[styles.userValue, { fontWeight: "bold" }]}>{context.user?.points ?? 0}</Text>
+      </Text>
+      <Text style={[styles.userLabel, { color: "#e0ff55ff" }]}>
+        Role: <Text style={[styles.userValue, { fontWeight: "bold" }]}>{context.user?.role ?? "—" }</Text>
       </Text>
 
       {/* Actions */}
@@ -96,11 +109,11 @@ const styles = StyleSheet.create({
     borderRadius: 60 
   },
   decorShapeTopLeft: { 
-    top: 60, 
+    top: 85, 
     left: -40 
   },
-  decorShapeBottomRight: { 
-    bottom: 25, 
+  decorShapeTopRight: { 
+    top: 165, 
     right: -40 
   },
   circleGradient: { 

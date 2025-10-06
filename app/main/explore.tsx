@@ -1,4 +1,6 @@
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { router } from "expo-router";
 import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 
@@ -15,8 +17,15 @@ export default function ExploreScreen() {
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={{ flex: 1, borderRadius: 60 }} />
       </View>
 
+      {/* Header */}
+      <View style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.push("/main/(tabs)/home")}>
+          <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
+
       {/* Logo */}
-      <Image source={require("../../../assets/images/Bety.png")} style={styles.logo} />
+      <Image source={require("../../assets/images/Bety.png")} style={styles.logo} />
 
       {/* Contenido */}
       <Text style={styles.title}>🔍 Explore</Text>
@@ -28,7 +37,7 @@ export default function ExploreScreen() {
 
       {/* Card 1 */}
       <View style={styles.card}>
-        <Image source={require("../../../assets/images/soccer.png")} style={styles.cardImage} />
+        <Image source={require("../../assets/images/soccer.png")} style={styles.cardImage} />
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>⚽ Soccer Match</Text>
           <Text style={styles.cardSubtitle}>Join now and predict the winner!</Text>
@@ -40,7 +49,7 @@ export default function ExploreScreen() {
 
       {/* Card 2 */}
       <View style={styles.card}>
-        <Image source={require("../../../assets/images/casino.png")} style={styles.cardImage} />
+        <Image source={require("../../assets/images/casino.png")} style={styles.cardImage} />
         <View style={styles.cardContent}>
           <Text style={styles.cardTitle}>🎰 Casino Spin</Text>
           <Text style={styles.cardSubtitle}>Try your luck in the roulette!</Text>
@@ -61,12 +70,12 @@ const styles = StyleSheet.create({
   },
   decorShape: { 
     position: "absolute", 
-    width: 150, 
+    width: 140, 
     height: 40, 
     borderRadius: 60 
   },
   decorShapeTopLeft: { 
-    top: 80, 
+    top: 85, 
     left: -40 
   },
 decorShapeTopRight: { 
@@ -137,5 +146,10 @@ decorShapeTopRight: {
   cardButtonText: { 
     color: "#fff", 
     fontWeight: "bold" 
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 30
   }
 });

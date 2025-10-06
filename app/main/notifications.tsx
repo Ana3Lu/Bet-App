@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { Image, StatusBar, StyleSheet, Text, View } from "react-native";
+import { router } from "expo-router";
+import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function NotificationsScreen() {
   const notifications = [
@@ -20,9 +21,16 @@ export default function NotificationsScreen() {
       <View style={[styles.decorShape, styles.decorShapeTopRight]}>
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={{ flex: 1, borderRadius: 60 }} />
       </View>
+
+      {/* Header */}
+      <View style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.push("/main/(tabs)/home")}>
+          <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
       
       {/* Logo */}
-      <Image source={require("../../../assets/images/Bety.png")} style={styles.logo} />
+      <Image source={require("../../assets/images/Bety.png")} style={styles.logo} />
         
       {/* Contenido */}
       <Text style={styles.title}><Ionicons name="notifications-outline" size={30} color="white" /> Notifications</Text>
@@ -51,11 +59,11 @@ const styles = StyleSheet.create({
     borderRadius: 60 
   },
   decorShapeBottomLeft: { 
-    bottom: 50, 
+    bottom: 80, 
     left: -40 
   },
   decorShapeTopRight: { 
-    top: 100, 
+    top: 110, 
     right: -40 
   },
   logo: { 
@@ -91,5 +99,10 @@ const styles = StyleSheet.create({
   cardDate: { 
     color: "#aaa", 
     fontSize: 12 
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 30
   }
 });
