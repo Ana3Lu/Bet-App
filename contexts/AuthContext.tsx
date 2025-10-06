@@ -10,6 +10,7 @@ interface Profile {
   gender?: string;
   points?: number;
   avatar_url?: string;
+  role?: string;
 }
 
 interface AuthContextProps {
