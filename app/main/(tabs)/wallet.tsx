@@ -1,4 +1,5 @@
 import { AuthContext } from "@/contexts/AuthContext";
+import { BetContext } from "@/contexts/BetContext";
 import { supabase } from "@/utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -19,6 +20,7 @@ export default function WalletScreen() {
   const { user } = useContext(AuthContext);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [balance, setBalance] = useState<number>(0);
+  const { participations } = useContext(BetContext);
 
   useEffect(() => {
     if (!user) return;
@@ -69,7 +71,7 @@ export default function WalletScreen() {
     };
 
     fetchWallet();
-  }, [user]);
+  }, [user, participations]);
 
   return (
     <View style={styles.container}>

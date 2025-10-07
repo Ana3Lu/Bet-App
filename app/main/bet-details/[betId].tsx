@@ -1,27 +1,33 @@
-import { Bet } from "@/contexts/BetContext";
+import { Bet, BetContext } from "@/contexts/BetContext";
 import { supabase } from "@/utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useContext, useEffect, useState } from "react";
+import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
+import { AuthContext } from "@/contexts/AuthContext";
+
+interface ProfileSummary {
+  id: string;
+  name: string;
+  email: string;
+  avatar_url?: string;
+}
 
 interface Participant {
   id: string;
   amount: number;
   status: string;
-  player_id: {
-    name: string;
-    email: string;
-    avatar_url?: string;
-  };
+  player_id: ProfileSummary;
 }
 
 export default function BetDetailsScreen() {
   const { betId } = useLocalSearchParams<{ betId: string }>();
   const [bet, setBet] = useState<Bet | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const { closeBet } = useContext(BetContext);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     if (!betId) return;
@@ -37,7 +43,7 @@ export default function BetDetailsScreen() {
     // Obtener participantes y su info de perfil
     supabase
       .from('bets_participations')
-      .select('*, player_id(name,email,avatar_url)')
+      .select('*, player_id(id,name,email,avatar_url)')
       .eq('bet_id', betId)
       .then(({ data }) => setParticipants(data || []));
   }, [betId]);
@@ -116,12 +122,37 @@ export default function BetDetailsScreen() {
                   <Text style={styles.infoValue}>{p.status}</Text>
                 </View>
               </View>
-            </View>
-          ))
-        )}
-      </ScrollView>
-    );
-  }
+        
+            {user?.role === "ADMIN" && bet.status === "ACTIVE" && (
+              <TouchableOpacity
+                style={[styles.cardButton, { backgroundColor: "#4caf50", marginTop: 10, alignSelf: "center" }]}
+                onPress={() =>
+                  Alert.alert(
+              "Confirm Winner",
+              `Set ${p.player_id?.name} as winner?`,
+              [
+                { text: "Cancel", style: "cancel" },
+                {
+                  text: "Confirm",
+                  onPress: async () => {
+                    await closeBet(bet.id, p.player_id.id);
+                    Alert.alert("✅ Bet Closed", `${p.player_id.name} is the winner!`);
+                    router.back();
+                  },
+                },
+              ]
+            )
+          }
+          >
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>Set Winner</Text>
+        </TouchableOpacity>
+      )}
+    </View>
+    ))
+      )}
+    </ScrollView>
+  );
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#1b266bff", padding: 20 },
@@ -139,7 +170,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 20, fontWeight: "bold", color: "#fff", marginVertical: 15 },
   card: { flexDirection: "row", backgroundColor: "#2b3a7a", padding: 10, borderRadius: 12, marginBottom: 10 },
   avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 10 },
-  cardContent: { justifyContent: "center" },
+  cardContent: { justifyContent: "center", paddingRight: 10, flex: 1 },
   name: { fontWeight: "bold", color: "#fff" },
   email: { color: "#ccc" },
   noParticipants: { textAlign: "center", color: "#ccc", marginTop: 10 },
@@ -150,4 +181,11 @@ const styles = StyleSheet.create({
   },
   infoLabel: { color: "#ffffffff", fontWeight: "bold", alignSelf: "flex-start" }, 
   infoValue: { color: "#adb4ffff" },
+  cardButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    marginTop: 15,
+    marginBottom: 10,
+  },
 });

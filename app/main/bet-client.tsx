@@ -1,36 +1,18 @@
 import { AuthContext } from "@/contexts/AuthContext";
-import { Bet } from "@/contexts/BetContext";
+import { BetContext } from "@/contexts/BetContext";
 import { supabase } from "@/utils/supabase";
 import { LinearGradient } from "expo-linear-gradient";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Alert, Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function BetClientScreen() {
   const { user } = useContext(AuthContext);
-  const [bets, setBets] = useState<Bet[]>([]);
-  const [participations, setParticipations] = useState<string[]>([]); // solo ids de bets
+  const { bets, participations, fetchBets, fetchParticipations } = useContext(BetContext);
 
   useEffect(() => {
     fetchBets();
     fetchParticipations();
-  }, []);
-
-  const fetchBets = async () => {
-    const { data, error } = await supabase.from("bets").select("*").order("created_at", { ascending: false });
-    if (!error && data) setBets(data as Bet[]);
-  };
-
-  const fetchParticipations = async () => {
-    if (!user) return;
-    const { data, error } = await supabase
-      .from("bets_participations")
-      .select("bet_id")
-      .eq("player_id", user.id);
-
-    if (!error && data) {
-      setParticipations(data.map(p => p.bet_id));
-    }
-  };
+  }, [fetchBets, fetchParticipations]);
 
   const joinBet = async (betId: string, cost: number) => {
     if (!user) {
@@ -44,10 +26,11 @@ export default function BetClientScreen() {
       amount: cost,
       status: "PENDING",
     });
+
     if (!error) {
       Alert.alert("✅ Joined!", "You have successfully joined this bet.");
-      fetchBets();
-      fetchParticipations();
+      await fetchBets();
+      await fetchParticipations();
     }
   };
 
@@ -81,13 +64,19 @@ export default function BetClientScreen() {
                 <Text style={styles.cardSubtitle}>{bet.description}</Text>
                 <Text style={styles.cardSubtitle}>💰 Cost: ${bet.cost}</Text>
                 {bet.ends_at && <Text style={styles.cardSubtitle}>⏰ Ends: {new Date(bet.ends_at).toLocaleString()}</Text>}
-                {!participations.includes(bet.id) && (
+                {bet.status === "ACTIVE" && !participations.includes(bet.id) && (
                   <TouchableOpacity
                     style={[styles.cardButton, { backgroundColor: "#4facfe" }]}
                     onPress={() => joinBet(bet.id, bet.cost)}
                   >
                     <Text style={styles.cardButtonText}>Join Bet</Text>
                   </TouchableOpacity>
+                )}
+
+                {bet.status === "CLOSED" && (
+                  <Text style={{ color: "#f6ac5cff", marginTop: 6 }}>
+                    This bet has ended.
+                  </Text>
                 )}
               </View>
             </View>
