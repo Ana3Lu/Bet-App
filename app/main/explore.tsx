@@ -4,7 +4,8 @@ import { supabase } from "@/utils/supabase";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { useContext, useEffect, useMemo } from "react";
+import LottieView from 'lottie-react-native';
+import { useContext, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Image,
@@ -21,6 +22,7 @@ export default function ExploreScreen() {
   const { bets, participations, fetchBets, fetchParticipations } =
     useContext(BetContext);
   const { favorites, toggleFavorite, fetchFavorites } = useContext(BetContext);
+  const [animateFavorite, setAnimateFavorite] = useState<string | null>(null);
 
   useEffect(() => {
     fetchBets();
@@ -106,84 +108,100 @@ export default function ExploreScreen() {
       <Text style={styles.subtitle}>Find active bets to join</Text>
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        {filteredBets.length === 0 ? (
-          <Text style={styles.noBets}>
-            No available bets to join right now.
-          </Text>
-        ) : (
-          filteredBets.map((bet) => {
-            const isAdmin = user?.role === "ADMIN";
+      {filteredBets.length === 0 ? (
+      <View style={{ alignItems: "center", marginTop: 20 }}>
+        <LottieView
+          source={require("../../assets/animations/No data Found.json")}
+          autoPlay
+          loop
+          style={{ width: 150, height: 150 }}
+        />
+        <Text style={styles.noBets}>No available bets to join right now.</Text>
+      </View>
+    ) : (
+    filteredBets.map((bet) => {
+      const isAdmin = user?.role === "ADMIN";
 
-            return (
-              <View key={bet.id} style={styles.card}>
-                {bet.image_url && (
-                  <Image
-                    source={{ uri: bet.image_url }}
-                    style={styles.cardImage}
-                  />
-                )}
-                <View style={styles.cardContent}>
-                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text style={styles.cardTitle}>{bet.title}</Text>
-
-                    {/* ❤️ Favorito */}
-                    <TouchableOpacity onPress={() => user && toggleFavorite(bet.id, user.id)}>
-                      <Ionicons
-                        name={favorites.includes(bet.id) ? "star" : "star-outline"}
-                        size={24}
-                        color={favorites.includes(bet.id) ? "#ffd700" : "#aaa"}
-                      />
-                    </TouchableOpacity>
-                  </View>
-
-                  {isAdmin && (
-                    <Text style={{ color: "#ffd700", fontSize: 13 }}>
-                      ⭐ {bet.favorites_count || 0} favorites
-                    </Text>
+      return (
+        <View key={bet.id} style={styles.card}>
+          {bet.image_url && (
+            <Image source={{ uri: bet.image_url }} style={styles.cardImage} />
+          )}
+          <View style={styles.cardContent}>
+            {/* Título + Favorito */}
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+              <Text style={styles.cardTitle}>{bet.title}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  if (user) {
+                    toggleFavorite(bet.id, user.id);
+                    setAnimateFavorite(bet.id);
+                    setTimeout(() => setAnimateFavorite(null), 1000);
+                  }
+                }}
+              >
+                <View style={styles.emptyAnimationContainer}>
+                  {animateFavorite === bet.id ? (
+                    <LottieView
+                      source={require("../../assets/animations/Star.json")}
+                      autoPlay
+                      loop={false}
+                      style={{ width: 24, height: 24 }}
+                    />
+                  ) : (
+                    <Ionicons
+                      name={favorites.includes(bet.id) ? "star" : "star-outline"}
+                      size={24}
+                      color={favorites.includes(bet.id) ? "#ffd700" : "#aaa"}
+                    />
                   )}
-
-                  <Text style={styles.cardSubtitle}>{bet.description}</Text>
-                  <Text style={styles.cardSubtitle}>💰 Cost: ${bet.cost}</Text>
-                  {bet.ends_at && (
-                    <Text style={styles.cardSubtitle}>
-                      ⏰ Ends: {new Date(bet.ends_at).toLocaleString()}
-                    </Text>
-                  )}
-
-                  {/* 🔹 Mostrar "Join Bet" solo si NO es admin */}
-                  {!isAdmin && (
-                    <TouchableOpacity
-                      style={[
-                        styles.cardButton,
-                        { backgroundColor: "#4facfe" },
-                      ]}
-                      onPress={() => joinBet(bet.id, bet.cost)}
-                    >
-                      <Text style={styles.cardButtonText}>Join Bet</Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {/* 🔹 Mostrar siempre "View Details" */}
-                  <TouchableOpacity
-                    style={[
-                      styles.cardButton,
-                      {
-                        backgroundColor: isAdmin ? "#ff9800" : "#0d9c5c",
-                        marginTop: 5,
-                      },
-                    ]}
-                    onPress={() => router.push(`/main/bet-details/${bet.id}`)}
-                  >
-                    <Text style={styles.cardButtonText}>
-                      {isAdmin ? "View Details (Admin)" : "View Details"}
-                    </Text>
-                  </TouchableOpacity>
                 </View>
-              </View>
-            );
-          })
-        )}
-      </ScrollView>
+              </TouchableOpacity>
+            </View>
+
+            {/* Info adicional */}
+            {isAdmin && (
+              <Text style={{ color: "#ffd700", fontSize: 13 }}>
+                ⭐ {bet.favorites_count || 0} favorites
+              </Text>
+            )}
+            <Text style={styles.cardSubtitle}>{bet.description}</Text>
+            <Text style={styles.cardSubtitle}>💰 Cost: ${bet.cost}</Text>
+            {bet.ends_at && (
+              <Text style={styles.cardSubtitle}>
+                ⏰ Ends: {new Date(bet.ends_at).toLocaleString()}
+              </Text>
+            )}
+
+            {/* Botones */}
+            {!isAdmin && (
+              <TouchableOpacity
+                style={[styles.cardButton, { backgroundColor: "#4facfe" }]}
+                onPress={() => joinBet(bet.id, bet.cost)}
+              >
+                <Text style={styles.cardButtonText}>Join Bet</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={[
+                styles.cardButton,
+                {
+                  backgroundColor: isAdmin ? "#ff9800" : "#0d9c5c",
+                  marginTop: 5,
+                },
+              ]}
+              onPress={() => router.push(`/main/bet-details/${bet.id}`)}
+            >
+              <Text style={styles.cardButtonText}>
+                {isAdmin ? "View Details (Admin)" : "View Details"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    })
+  )}
+</ScrollView>
     </View>
   );
 }
@@ -193,7 +211,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#1b266bff",
     paddingHorizontal: 30,
-    paddingTop: 80,
+    paddingTop: 50,
   },
   decorShape: { position: "absolute", width: 140, height: 40, borderRadius: 60 },
   decorShapeTopLeft: { top: 85, left: -40 },
@@ -216,6 +234,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#ccc",
     marginBottom: 20,
+    marginTop: 5,
     textAlign: "center",
   },
   card: {
@@ -239,4 +258,9 @@ const styles = StyleSheet.create({
   cardButtonText: { color: "#fff", fontWeight: "bold" },
   noBets: { color: "#ccc", textAlign: "center", marginTop: 40, fontSize: 16 },
   backButton: { position: "absolute", top: 50, left: 30 },
+  emptyAnimationContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 15,
+  }
 });

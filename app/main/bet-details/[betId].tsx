@@ -7,6 +7,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import LottieView from "lottie-react-native"; // 👈 asegúrate de tener esta importación
 import { useContext, useEffect, useState } from "react";
 import { Alert, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ReviewModal from "../../components/ReviewModal";
 
 interface ProfileSummary {
   id: string;
@@ -30,6 +31,9 @@ export default function BetDetailsScreen() {
   const { user } = useContext(AuthContext);
   const [showAnimation, setShowAnimation] = useState(false);
 
+  const [showReviews, setShowReviews] = useState(false);
+  const [reviewCount, setReviewCount] = useState(0);
+
   useEffect(() => {
     if (!betId) return;
 
@@ -47,6 +51,12 @@ export default function BetDetailsScreen() {
       .select("*, player_id(id,name,email,avatar_url)")
       .eq("bet_id", betId)
       .then(({ data }) => setParticipants(data || []));
+
+    supabase
+      .from("reviews")
+      .select("*", { count: "exact", head: true })
+      .eq("bet_id", betId)
+      .then(({ count }) => setReviewCount(count || 0));
   }, [betId]);
 
   if (!bet) return <Text style={styles.loading}>Loading...</Text>;
@@ -150,6 +160,32 @@ export default function BetDetailsScreen() {
             </View>
           ))
         )}
+
+        <View style={{ marginTop: 15, alignItems: "center" }}>
+          <TouchableOpacity
+            style={styles.reviewButton}
+            onPress={() => setShowReviews(true)}
+          >
+            <Ionicons name="chatbubbles" size={20} color="white" />
+            <Text style={{ color: "white", marginLeft: 6 }}>
+              Reviews ({reviewCount})
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <ReviewModal
+          betId={bet.id}
+          isVisible={showReviews}
+          onClose={() => setShowReviews(false)}
+          onReviewAdded={() => setReviewCount((prev) => prev + 1)}
+        />
+
+        <ReviewModal
+          betId={bet.id}
+          isVisible={showReviews}
+          onClose={() => setShowReviews(false)}
+          onReviewAdded={() => setReviewCount((prev) => prev + 1)}
+        />
       </ScrollView>
 
       {/* 👇 Lottie animación flotante */}
@@ -199,4 +235,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.3)",
   },
+  reviewButton: {
+  flexDirection: "row",
+  alignItems: "center",
+  backgroundColor: "#0d9c5cff",
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 25,
+}
 });

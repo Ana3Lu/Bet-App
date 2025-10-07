@@ -3,6 +3,7 @@ import { BetContext } from "@/contexts/BetContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import LottieView from "lottie-react-native";
 import { useContext, useEffect } from "react";
 import {
   Image,
@@ -92,8 +93,17 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>🎯 Your Active Bets</Text>
 
           {activeUserBets.length === 0 ? (
+          <View style={styles.emptyAnimationContainer}>
+            {/* Animación Lottie */}
+            <LottieView
+              source={require("../../../assets/animations/No data Found.json")}
+              autoPlay
+              loop
+              style={{ width: 70, height: 70, backgroundColor: "#fff", borderRadius: 40 }}
+            />
             <Text style={styles.emptyText}>You have no active bets yet.</Text>
-          ) : (
+          </View>
+        ) : (
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -244,5 +254,10 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     justifyContent: "center",
     alignItems: "center",
+  },
+  emptyAnimationContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginVertical: 15,
   }
 });
