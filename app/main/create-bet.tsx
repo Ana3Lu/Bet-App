@@ -207,6 +207,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", marginLeft: 8 },
-  datePickerButton: { marginBottom: 15 },
-  datePickerText: { color: "#fff", fontSize: 16, fontWeight: "bold", marginLeft: 8 },
+  datePickerButton: { marginBottom: 10 },
+  datePickerText: { color: "#fff", fontSize: 16, fontWeight: "bold", marginLeft: 8},
 });
