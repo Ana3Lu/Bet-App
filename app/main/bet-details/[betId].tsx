@@ -1,8 +1,11 @@
 import { Bet } from "@/contexts/BetContext";
 import { supabase } from "@/utils/supabase";
-import { useLocalSearchParams } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
 
 interface Participant {
   id: string;
@@ -44,18 +47,52 @@ export default function BetDetailsScreen() {
   return (
     <ScrollView style={styles.container}>
 
-      {bet.image_url && <Image source={{ uri: bet.image_url }} style={styles.betImage} />}
+      {/* Header */}
+      <View style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Imagen con borde degradado */}
+      {bet.image_url && (
+        <View style={styles.imageWrapper}>
+          <LinearGradient
+            colors={["#0d9c5c7b", "#293bad7b"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.gradientBorder}
+          >
+            <Image source={{ uri: bet.image_url }} style={styles.betImage} />
+          </LinearGradient>
+        </View>
+      )}
 
       <Text style={styles.title}>{bet.title}</Text>
       <Text style={styles.description}>{bet.description}</Text>
 
       <View style={styles.infoRow}>
-        <Text style={styles.infoText}>💰 Cost: ${bet.cost}</Text>
-        <Text style={styles.infoText}>🏦 Commission: ${bet.commission}</Text>
+        <Text style={styles.infoLabel}>💰 Entry cost:</Text>
+        <Text style={styles.infoValue}>${bet.cost}</Text>
       </View>
-      <Text style={styles.infoText}>Status: {bet.status}</Text>
-      <Text style={styles.infoText}>Created at: {new Date(bet.created_at).toLocaleString()}</Text>
-      {bet.ends_at && <Text style={styles.infoText}>Ends at: {new Date(bet.ends_at).toLocaleString()}</Text>}
+      <View style={styles.infoRow}>
+        <Text style={styles.infoLabel}>🏦 Admin commission:</Text>
+        <Text style={styles.infoValue}>${bet.commission}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Text style={styles.infoLabel}>Status:</Text>
+        <Text style={styles.infoValue}>{bet.status}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Text style={styles.infoLabel}>Created at:</Text>
+        <Text style={styles.infoValue}>{new Date(bet.created_at).toLocaleString()}</Text>
+      </View>
+      {bet.ends_at && (
+        <View style={styles.infoRow}>
+          <Text style={styles.infoLabel}>Ends at:</Text>
+          <Text style={styles.infoValue}>{new Date(bet.ends_at).toLocaleString()}</Text>
+        </View>
+      )}
 
       <Text style={styles.sectionTitle}>Participants ({participants.length})</Text>
 
@@ -64,27 +101,35 @@ export default function BetDetailsScreen() {
       ) : (
         participants.map(p => (
           <View key={p.id} style={styles.card}>
-            {p.player_id?.avatar_url && (
-              <Image source={{ uri: p.player_id.avatar_url }} style={styles.avatar} />
-            )}
-            <View style={styles.cardContent}>
-              <Text style={styles.name}>{p.player_id?.name}</Text>
-              <Text style={styles.email}>{p.player_id?.email}</Text>
-              <Text>Amount: ${p.amount}</Text>
-              <Text>Status: {p.status}</Text>
+              {p.player_id?.avatar_url && (
+                <Image source={{ uri: p.player_id.avatar_url }} style={styles.avatar} />
+              )}
+              <View style={styles.cardContent}>
+                <Text style={styles.name}>{p.player_id?.name}</Text>
+                <Text style={styles.email}>{p.player_id?.email}</Text>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Amount:</Text>
+                  <Text style={styles.infoValue}>${p.amount}</Text>
+                </View>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Status: </Text>
+                  <Text style={styles.infoValue}>{p.status}</Text>
+                </View>
+              </View>
             </View>
-          </View>
-        ))
-      )}
-    </ScrollView>
-  );
-}
+          ))
+        )}
+      </ScrollView>
+    );
+  }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#1b266bff", padding: 20 },
   loading: { color: "#ccc", textAlign: "center", marginTop: 50 },
 
-  betImage: { width: "100%", height: 200, borderRadius: 15, marginBottom: 15 },
+  imageWrapper: { alignItems: "center", marginTop: 50, marginBottom: 20 },
+  gradientBorder: { padding: 5, borderRadius: 15 },
+  betImage: { width: 300, height: 200, borderRadius: 12 },
   title: { fontSize: 26, fontWeight: "bold", color: "#fff", marginBottom: 10 },
   description: { fontSize: 16, color: "#ccc", marginBottom: 15 },
   
@@ -98,4 +143,11 @@ const styles = StyleSheet.create({
   name: { fontWeight: "bold", color: "#fff" },
   email: { color: "#ccc" },
   noParticipants: { textAlign: "center", color: "#ccc", marginTop: 10 },
+  backButton: {
+    position: "absolute",
+    top: 10,
+    left: 10
+  },
+  infoLabel: { color: "#ffffffff", fontWeight: "bold", alignSelf: "flex-start" }, 
+  infoValue: { color: "#adb4ffff" },
 });

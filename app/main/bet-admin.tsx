@@ -18,8 +18,8 @@ export default function BetAdminScreen() {
       bet.title,
       'Choose action',
       [
-        { text: 'View Participants', onPress: () => router.push(`./bet-details/${bet.id}`) },
-        { text: 'Edit', onPress: () => router.push(`./edit-bet/${bet.id}`) },
+        { text: 'View Participants', onPress: () => router.push(`/main/bet-details/${bet.id}`) },
+        { text: 'Edit', onPress: () => router.push(`/main/edit-bet/${bet.id}`) },
         { text: 'Delete', onPress: () => deleteBet?.(bet.id), style: 'destructive' },
         { text: 'Cancel', style: 'cancel' },
       ]

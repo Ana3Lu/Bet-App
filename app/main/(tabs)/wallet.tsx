@@ -97,7 +97,7 @@ export default function WalletScreen() {
       <Image source={require("../../../assets/images/Bety.png")} style={styles.logo} />
 
       {/* Tarjeta de saldo */}
-      <LinearGradient colors={["#4facfe", "#00f2fe"]} style={styles.balanceCard}>
+      <LinearGradient colors={["#4facfe", "#00fea9bf"]} style={styles.balanceCard}>
         <Ionicons name="wallet" size={28} color="#fff" />
         <View style={{ marginLeft: 15 }}>
           <Text style={styles.balanceCardTitle}>💳 Current Balance</Text>
@@ -106,7 +106,7 @@ export default function WalletScreen() {
       </LinearGradient>
 
       {/* Historial */}
-      <Text style={styles.historyTitle}>🏷 {user?.role === "CLIENT" ? "Participation History" : "Your Bets"}</Text>
+      <Text style={styles.historyTitle}>🏷 {user?.role === "CLIENT" ? "Participation History" : "Your Bets Commissions"}</Text>
       <FlatList
         data={transactions}
         keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
@@ -125,7 +125,7 @@ export default function WalletScreen() {
                     : item.status === "LOST"
                     ? { color: "red" }
                     : { color: "#aaa" }
-                  : { color: "#dc8e59" }, // ADMIN color para comisión
+                  : { color: "#f6ac5cff" }, // ADMIN color para comisión
               ]}
             >
               {user?.role === "CLIENT"
@@ -145,14 +145,14 @@ export default function WalletScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#1b266bff", alignItems: "center", paddingHorizontal: 25, paddingTop: 90 },
+  container: { flex: 1, backgroundColor: "#1b266bff", alignItems: "center", paddingHorizontal: 25, paddingTop: 50 },
   decorShape: { position: "absolute", width: 150, height: 40, borderRadius: 60 },
-  decorShapeTopLeft: { top: 90, left: -40 },
-  decorShapeBottomRight: { top: 290, right: -40 },
+  decorShapeTopLeft: { top: 70, left: -40 },
+  decorShapeBottomRight: { top: 255, right: -40 },
   logo: { width: 85, height: 85, resizeMode: "contain", marginBottom: 10 },
   balanceCard: { flexDirection: "row", alignItems: "center", padding: 20, borderRadius: 20, width: "100%", marginBottom: 20 },
   balanceCardTitle: { color: "#fff", fontSize: 16, fontWeight: "bold" },
-  balanceCardAmount: { color: "#dc8e59", fontSize: 28, fontWeight: "bold", marginTop: 5 },
+  balanceCardAmount: { color: "#ffffffff", fontSize: 28, fontWeight: "bold", marginTop: 5 },
   historyTitle: { color: "#fff", fontSize: 20, fontWeight: "bold", alignSelf: "flex-start", marginBottom: 10 },
   transactionCard: { backgroundColor: "#1c2458", padding: 15, borderRadius: 12, marginBottom: 12 },
   transactionTitle: { color: "#fff", fontWeight: "bold", fontSize: 16 },

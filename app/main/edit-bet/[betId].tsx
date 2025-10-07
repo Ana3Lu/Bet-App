@@ -1,9 +1,10 @@
 import { Bet, BetContext } from "@/contexts/BetContext";
+import { Ionicons } from "@expo/vector-icons";
 import { Picker } from '@react-native-picker/picker';
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useContext, useEffect, useState } from "react";
-import { Image, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export default function EditBetScreen() {
   const router = useRouter();
@@ -62,10 +63,16 @@ export default function EditBetScreen() {
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={{ flex: 1, borderRadius: 60 }} />
       </View>
 
-      <Image source={require("../../assets/images/Bety.png")} style={styles.logo} />
+      {/* Header */}
+      <View style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.back()}>
+            <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
+
       <Text style={styles.title}>✏️ Edit Bet</Text>
 
-      <ScrollView style={{ marginTop: 20 }}>
+      <ScrollView style={{ marginTop: 10 }}>
         <Text style={styles.label}>Title</Text>
         <TextInput style={styles.input} value={title} onChangeText={setTitle} />
 
@@ -101,14 +108,19 @@ export default function EditBetScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#1b266bff", paddingHorizontal: 30, paddingTop: 90 },
+  container: { flex: 1, backgroundColor: "#1b266bff", paddingHorizontal: 30, paddingTop: 70 },
   decorShape: { position: "absolute", width: 140, height: 40, borderRadius: 60 },
-  decorShapeTopLeft: { top: 85, left: -40 },
-  decorShapeTopRight: { top: 200, right: -40 },
-  title: { fontSize: 28, fontWeight: "bold", color: "#fff", marginBottom: 20, textAlign: "center" },
+  decorShapeTopLeft: { top: 70, left: -40 },
+  decorShapeTopRight: { top: 70, right: -40 },
+  title: { fontSize: 28, fontWeight: "bold", color: "#fff", marginBottom: 10, textAlign: "center" },
   logo: { width: 85, height: 85, resizeMode: "contain", marginBottom: 10, alignSelf: "center" },
-  label: { color: "#ccc", marginTop: 10 },
+  label: { color: "#fff", marginTop: 10, fontWeight: "bold" },
   input: { backgroundColor: "#2b3a7a", color: "#fff", borderRadius: 10, padding: 10, marginTop: 5 },
   saveButton: { marginTop: 20, alignItems: "center" },
   circleButton: { paddingVertical: 10, paddingHorizontal: 40, borderRadius: 25, justifyContent: "center", alignItems: "center" },
+  backButton: {
+    position: "absolute",
+    top: 30,
+    left: 20
+  }
 });

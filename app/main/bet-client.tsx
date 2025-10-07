@@ -8,14 +8,28 @@ import { Alert, Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity
 export default function BetClientScreen() {
   const { user } = useContext(AuthContext);
   const [bets, setBets] = useState<Bet[]>([]);
+  const [participations, setParticipations] = useState<string[]>([]); // solo ids de bets
 
   useEffect(() => {
     fetchBets();
+    fetchParticipations();
   }, []);
 
   const fetchBets = async () => {
     const { data, error } = await supabase.from("bets").select("*").order("created_at", { ascending: false });
     if (!error && data) setBets(data as Bet[]);
+  };
+
+  const fetchParticipations = async () => {
+    if (!user) return;
+    const { data, error } = await supabase
+      .from("bets_participations")
+      .select("bet_id")
+      .eq("player_id", user.id);
+
+    if (!error && data) {
+      setParticipations(data.map(p => p.bet_id));
+    }
   };
 
   const joinBet = async (betId: string, cost: number) => {
@@ -30,8 +44,11 @@ export default function BetClientScreen() {
       amount: cost,
       status: "PENDING",
     });
-    if (error) Alert.alert("❌ Error", error.message);
-    else Alert.alert("✅ Joined!", "You have successfully joined this bet.");
+    if (!error) {
+      Alert.alert("✅ Joined!", "You have successfully joined this bet.");
+      fetchBets();
+      fetchParticipations();
+    }
   };
 
   return (
@@ -64,12 +81,14 @@ export default function BetClientScreen() {
                 <Text style={styles.cardSubtitle}>{bet.description}</Text>
                 <Text style={styles.cardSubtitle}>💰 Cost: ${bet.cost}</Text>
                 {bet.ends_at && <Text style={styles.cardSubtitle}>⏰ Ends: {new Date(bet.ends_at).toLocaleString()}</Text>}
-                <TouchableOpacity
-                  style={[styles.cardButton, { backgroundColor: "#4facfe" }]}
-                  onPress={() => joinBet(bet.id, bet.cost)}
-                >
-                  <Text style={styles.cardButtonText}>Join Bet</Text>
-                </TouchableOpacity>
+                {!participations.includes(bet.id) && (
+                  <TouchableOpacity
+                    style={[styles.cardButton, { backgroundColor: "#4facfe" }]}
+                    onPress={() => joinBet(bet.id, bet.cost)}
+                  >
+                    <Text style={styles.cardButtonText}>Join Bet</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           ))
