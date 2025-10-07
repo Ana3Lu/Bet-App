@@ -1,18 +1,9 @@
 import { AuthContext } from "@/contexts/AuthContext";
+import { Bet } from "@/contexts/BetContext";
 import { supabase } from "@/utils/supabase";
 import { LinearGradient } from "expo-linear-gradient";
 import { useContext, useEffect, useState } from "react";
 import { Alert, Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-interface Bet {
-  id: string;
-  title: string;
-  description: string;
-  image_url: string | null;
-  cost: number;
-  commission: number;
-  created_at: string;
-}
 
 export default function BetClientScreen() {
   const { user } = useContext(AuthContext);
@@ -72,6 +63,7 @@ export default function BetClientScreen() {
                 <Text style={styles.cardTitle}>{bet.title}</Text>
                 <Text style={styles.cardSubtitle}>{bet.description}</Text>
                 <Text style={styles.cardSubtitle}>💰 Cost: ${bet.cost}</Text>
+                {bet.ends_at && <Text style={styles.cardSubtitle}>⏰ Ends: {new Date(bet.ends_at).toLocaleString()}</Text>}
                 <TouchableOpacity
                   style={[styles.cardButton, { backgroundColor: "#4facfe" }]}
                   onPress={() => joinBet(bet.id, bet.cost)}
@@ -81,7 +73,8 @@ export default function BetClientScreen() {
               </View>
             </View>
           ))
-        )}
+          )
+        }
       </ScrollView>
     </View>
   );
