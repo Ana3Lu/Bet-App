@@ -110,6 +110,13 @@ export default function CreateBetScreen() {
         />
       </View>
 
+      {/* Header */}
+      <View style={styles.backButton}>
+        <TouchableOpacity onPress={() => router.push("/main/bet-admin")}>
+          <Ionicons name="arrow-back" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
+
       <ScrollView contentContainerStyle={{ paddingTop: 110, paddingBottom: 80 }}>
         <Text style={styles.title}>🧠 Create a New Bet</Text>
 
@@ -149,7 +156,7 @@ export default function CreateBetScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleCreateBet} disabled={loading} style={styles.saveButton}>
-          <LinearGradient colors={["#43e97b", "#38f9d7"]} style={styles.buttonInner}>
+          <LinearGradient colors={["#43e97b", "#38f9d685"]} style={styles.buttonInner}>
             <Ionicons name="checkmark" size={20} color="#fff" />
             <Text style={styles.buttonText}>{loading ? "Saving..." : "Create Bet"}</Text>
           </LinearGradient>
@@ -197,7 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 15,
   },
-  uploadButton: { marginBottom: 15 },
+  uploadButton: { marginBottom: 15, marginTop: 10 },
   saveButton: { marginBottom: 30 },
   buttonInner: {
     flexDirection: "row",
@@ -209,4 +216,9 @@ const styles = StyleSheet.create({
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold", marginLeft: 8 },
   datePickerButton: { marginBottom: 10 },
   datePickerText: { color: "#fff", fontSize: 16, fontWeight: "bold", marginLeft: 8},
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 30
+  }
 });
