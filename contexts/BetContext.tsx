@@ -12,11 +12,15 @@ export interface Bet {
   created_at: string;
   ends_at?: string | null;
   status: "ACTIVE" | "CLOSED";
+  favorites_count?: number;
 }
 
 interface BetContextProps {
   bets: Bet[];
   participations: string[];
+  favorites: string[];
+  fetchFavorites: (userId: string) => Promise<void>;
+  toggleFavorite: (betId: string, userId: string) => Promise<void>;
   fetchBets: () => Promise<void>;
   fetchParticipations: () => Promise<void>;
   createBet: (bet: Omit<Bet, "id" | "created_at">) => Promise<void>;
@@ -31,14 +35,55 @@ export const BetProvider = ({ children }: any) => {
   const { user } = useContext(AuthContext);
   const [bets, setBets] = useState<Bet[]>([]);
   const [participations, setParticipations] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  const fetchFavorites = useCallback(async (userId: string) => {
+    if (!userId) return;
+    const { data, error } = await supabase
+      .from("bet_favorites")
+      .select("bet_id")
+      .eq("user_id", userId);
+    if (!error) setFavorites(data.map((f) => f.bet_id));
+  }, []);
+
+  const toggleFavorite = useCallback(async (betId: string, userId: string) => {
+    if (!userId) return;
+    const isFav = favorites.includes(betId);
+
+    if (isFav) {
+      await supabase
+        .from("bet_favorites")
+        .delete()
+        .eq("bet_id", betId)
+        .eq("user_id", userId);
+
+      // ↓ resta 1 del contador
+      await supabase.rpc("decrement_favorites", { bet_id_input: betId });
+
+      setFavorites((prev) => prev.filter((id) => id !== betId));
+    } else {
+      await supabase.from("bet_favorites").insert({ bet_id: betId, user_id: userId });
+
+      // ↓ suma 1 al contador
+      await supabase.rpc("increment_favorites", { bet_id_input: betId });
+
+      setFavorites((prev) => [...prev, betId]);
+    }
+  }, [favorites]);
 
   const fetchBets = useCallback(async () => {
     const { data, error } = await supabase
       .from("bets")
-      .select("*")
+      .select("*, bet_favorites(count)")
       .order("created_at", { ascending: false });
 
-    if (!error && data) setBets(data as Bet[]);
+    if (!error && data) {
+      const formatted = data.map((b: any) => ({
+        ...b,
+        favorites_count: b.bet_favorites[0]?.count || 0
+      }));
+      setBets(formatted);
+    }
   }, []);
 
   const fetchParticipations = useCallback(async () => {
@@ -109,7 +154,7 @@ export const BetProvider = ({ children }: any) => {
   }, [fetchBets]);
 
   return (
-    <BetContext.Provider value={{ bets, participations, fetchBets, fetchParticipations, createBet, editBet, deleteBet, closeBet }}>
+    <BetContext.Provider value={{ bets, participations, favorites, fetchFavorites, toggleFavorite, fetchBets, fetchParticipations, createBet, editBet, deleteBet, closeBet }}>
       {children}
     </BetContext.Provider>
   );

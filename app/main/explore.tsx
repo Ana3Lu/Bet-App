@@ -20,6 +20,7 @@ export default function ExploreScreen() {
   const { user } = useContext(AuthContext);
   const { bets, participations, fetchBets, fetchParticipations } =
     useContext(BetContext);
+  const { favorites, toggleFavorite, fetchFavorites } = useContext(BetContext);
 
   useEffect(() => {
     fetchBets();
@@ -60,6 +61,10 @@ export default function ExploreScreen() {
     // Para clientes: solo las que NO ha unido aún
     return activeBets.filter((b) => !participations.includes(b.id));
   }, [bets, participations, user]);
+
+  useEffect(() => {
+  if (user?.id) fetchFavorites(user.id);
+}, [fetchFavorites, user]);
 
   return (
     <View style={styles.container}>
@@ -118,7 +123,25 @@ export default function ExploreScreen() {
                   />
                 )}
                 <View style={styles.cardContent}>
-                  <Text style={styles.cardTitle}>{bet.title}</Text>
+                  <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                    <Text style={styles.cardTitle}>{bet.title}</Text>
+
+                    {/* ❤️ Favorito */}
+                    <TouchableOpacity onPress={() => user && toggleFavorite(bet.id, user.id)}>
+                      <Ionicons
+                        name={favorites.includes(bet.id) ? "star" : "star-outline"}
+                        size={24}
+                        color={favorites.includes(bet.id) ? "#ffd700" : "#aaa"}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
+                  {isAdmin && (
+                    <Text style={{ color: "#ffd700", fontSize: 13 }}>
+                      ⭐ {bet.favorites_count || 0} favorites
+                    </Text>
+                  )}
+
                   <Text style={styles.cardSubtitle}>{bet.description}</Text>
                   <Text style={styles.cardSubtitle}>💰 Cost: ${bet.cost}</Text>
                   {bet.ends_at && (
