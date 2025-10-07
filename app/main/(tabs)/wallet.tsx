@@ -98,7 +98,7 @@ export default function WalletScreen() {
               {"status" in item ? item.status : item.title}
             </Text>
             <Text style={styles.cardAmount}>
-              ${"amount" in item ? item.amount : item.commission}
+              ${"amount" in item ? item.amount : item.commission.toFixed(2)}
             </Text>
           </View>
         )}

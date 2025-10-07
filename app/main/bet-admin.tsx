@@ -1,31 +1,29 @@
-import { supabase } from "@/utils/supabase";
+import { Bet, BetContext } from "@/contexts/BetContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-
-interface Bet {
-  id: string;
-  title: string;
-  description: string;
-  image_url: string | null;
-  cost: number;
-  commission: number;
-  created_at: string;
-}
+import { useContext, useEffect } from "react";
+import { Alert, Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function BetAdminScreen() {
   const router = useRouter();
-  const [bets, setBets] = useState<Bet[]>([]);
+  const { bets, fetchBets, deleteBet } = useContext(BetContext);
 
   useEffect(() => {
     fetchBets();
-  }, []);
+  }, [ fetchBets ]);
 
-  const fetchBets = async () => {
-    const { data, error } = await supabase.from("bets").select("*").order("created_at", { ascending: false });
-    if (!error && data) setBets(data as Bet[]);
+  const openBetOptions = (bet: Bet) => {
+    Alert.alert(
+      bet.title,
+      'Choose action',
+      [
+        { text: 'View Participants', onPress: () => router.push(`./bet-details/${bet.id}`) },
+        { text: 'Edit', onPress: () => router.push(`./edit-bet/${bet.id}`) },
+        { text: 'Delete', onPress: () => deleteBet?.(bet.id), style: 'destructive' },
+        { text: 'Cancel', style: 'cancel' },
+      ]
+    );
   };
 
   return (
@@ -39,7 +37,6 @@ export default function BetAdminScreen() {
         <LinearGradient colors={["#0d9c5c7b", "#293bad7b"]} style={{ flex: 1, borderRadius: 60 }} />
       </View>
 
-      {/* Logo */}
       <Image 
         source={require("../../assets/images/Bety.png")}
         style={styles.logo}
@@ -63,14 +60,19 @@ export default function BetAdminScreen() {
         {bets.length === 0 ? (
           <Text style={styles.noBets}>No bets created yet.</Text>
         ) : (
-          bets.map((bet) => (
+          bets.map(bet => (
             <View key={bet.id} style={styles.card}>
               {bet.image_url && <Image source={{ uri: bet.image_url }} style={styles.cardImage} />}
               <View style={styles.cardContent}>
                 <Text style={styles.cardTitle}>{bet.title}</Text>
                 <Text style={styles.cardSubtitle}>{bet.description}</Text>
                 <Text style={styles.cardSubtitle}>💰 Cost: ${bet.cost}</Text>
-                <Text style={styles.cardSubtitle}>🏦 Commission: {bet.commission}%</Text>
+                <Text style={styles.cardSubtitle}>🏦 Commission: ${bet.commission}</Text>
+              </View>
+              <View style={{ position: 'absolute', top: 10, right: 10 }}>
+                <TouchableOpacity onPress={() => openBetOptions(bet)}>
+                  <Ionicons name="ellipsis-vertical" size={20} color="#fff" />
+                </TouchableOpacity>
               </View>
             </View>
           ))
